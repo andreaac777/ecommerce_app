@@ -13,9 +13,11 @@
   "type": "module",
   "dependencies": {
     "@clerk/express": "^1.7.63",
+    "@clerk/localizations": "^3.35.0",
     "cloudinary": "^2.8.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "inngest": "^3.49.3",
     "mongoose": "^8.19.3"
   }
 }
