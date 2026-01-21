@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon src/server.js",
+    "inngest": "inngest dev -u http://localhost:3000/api/inngest",
+    "dev:all": "concurrently \"npm run dev\" \"npm run inngest\""
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,10 @@
     "express": "^5.2.1",
     "inngest": "^3.49.3",
     "mongoose": "^8.19.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "inngest-cli": "^1.16.0",
+    "nodemon": "^3.1.11"
   }
 }
