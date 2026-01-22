@@ -10,6 +10,9 @@ const syncUser = inngest.createFunction(
     {id: "sync-user"},
     {event:"clerk.user.created"},
     async ({event}) => {
+
+        console.log("sync user function executed");
+        
         await connectDB();
         const {id, email_addresses, first_name, last_name, image_url}=event.data;
         const newUser = {
@@ -21,6 +24,7 @@ const syncUser = inngest.createFunction(
             wishlist:[],       
         };
         await User.create(newUser);
+        console.log("User created in DB");
     }
 );
 
@@ -28,9 +32,14 @@ const deleteUserFromDB = inngest.createFunction(
     {id: "delete-user-from-db"},
     {event:"clerk.user.deleted"},
     async ({event}) => {
+
+        console.log("delete user from DB function executed");
+        
         await connectDB();
         const {id}=event.data;
         await User.deleteOne({clerkId:id});
+
+        console.log("User deleted from DB");
     }
 );
 

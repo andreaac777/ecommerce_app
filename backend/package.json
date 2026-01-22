@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon src/server.js",
+    "inngest": "inngest dev -u http://localhost:3000/api/inngest",
+    "dev:all": "concurrently \"npm run dev\" \"npm run inngest\""
   },
   "keywords": [],
   "author": "",

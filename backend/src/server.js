@@ -25,7 +25,6 @@ app.post("/api/webhooks/clerk", async (req, res) => {
       name: `clerk.${event.type}`,
       data: event.data,
     });
-
     res.status(200).json({ received: true });
   } catch (error) {
     console.error("Error sending event to Inngest:", error);
