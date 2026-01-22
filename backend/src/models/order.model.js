@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema({
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -45,26 +50,9 @@ const orderSchema = new mongoose.Schema({
     clerkId: {
         type: String,
         required: true,
-        unique: true
     },
     orderItems: [orderItemSchema],
     shippingAddress: {
-        type: String,
-        required: true
-    },
-    paymentMethod: {
-        type: String,
-        required: true
-    },
-    paymentResult: {
-        type: Object,
-        required: true
-    },
-    tax: {
-        type: Number,
-        required: true
-    },
-    shipping: {
         type: shippingAddressSchema,
         required: true
     },

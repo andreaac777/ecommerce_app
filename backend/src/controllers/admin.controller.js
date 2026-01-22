@@ -10,21 +10,16 @@ export async function createProduct (req, res) {
         if (!name || !description || !price || !stock || !category) {
             return res.status(400).json({message: "All fields are required"});
         }
-        if (!req.files || !req.files.length === 0) {
+        if (!req.file) {
             return res.status(400).json({message: "Image is required"});
         }
-        if (req.files.length > 1) {
-            return res.status(400).json({message: "Only one image is allowed"});
-        }
 
-        const uploadPromises = req.files.map((file) => {
-            return cloudinary.uploader.upload(file.path,{
-                folder: "products"
-            });
+        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+            folder: "products"
         });
-
-        const uploadResults = await Promise.all(uploadPromises);
-        const imageUrl = uploadResults.map((result) => result.secure_url);
+        
+        const imageUrl = uploadResult.secure_url;
+        
         const product = await Product.create({
             name,
             description,
@@ -64,24 +59,16 @@ export async function updateProduct (req, res) {
 
         if (name) product.name = name;
         if (description) product.description = description;
-        if (price) product.price = parseFloat(price);
+        if (price !== undefined) product.price = parseFloat(price);
         if (stock !== undefined) product.stock = parseInt(stock);
         if (category) product.category = category;
         
         // handle image updates if new images are uploaded
-        if (req.files && req.files.length > 0) {
-            if (req.files.length > 1) {
-                return res.status(400).json({ message: "Only one image is allowed" });
-            }
-
-            const uploadPromises = req.files.map((file) => {
-                return cloudinary.uploader.upload(file.path, {
-                    folder: "products",
-                });
-            });
-
-            const uploadResults = await Promise.all(uploadPromises);
-            product.image = uploadResults.map((result) => result.secure_url);
+        if (req.file) {
+            const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+            folder: "products"
+        });
+            product.image = uploadResult.secure_url;
         }
 
         await product.save();
