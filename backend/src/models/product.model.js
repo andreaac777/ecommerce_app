@@ -24,10 +24,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
    },
-   image:{
-    type: String,
-    required: true
-   },
+   images:[
+    {
+        type: String,
+        required: true
+    }
+   ],
    averageRating:{
     type: Number,
     min: 0,
