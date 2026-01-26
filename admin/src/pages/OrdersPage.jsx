@@ -99,7 +99,7 @@ function OrdersPage() {
                             disabled={updateStatusMutation.isPending}
                           >
                             <option value="pending">Pendiente</option>
-                            <option value="shipped">Pagado</option>
+                            <option value="paid">Pagado</option>
                             <option value="delivered">Entregado</option>
                           </select>
                         </td>
