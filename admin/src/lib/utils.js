@@ -7,7 +7,7 @@ export const getOrderStatusBadge = (status) => {
     switch (status?.toLowerCase()) {
         case "delivered":
             return "badge-success";
-        case "shipped":
+        case "paid":
             return "badge-info";
         case "pending":
             return "badge-warning";

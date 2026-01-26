@@ -112,7 +112,7 @@ export async function updateOrderStatus (req, res) {
         const {orderId} = req.params;
         const {status} = req.body;
 
-        if (!["pending", "shipped", "delivered"].includes(status)) {
+        if (!["pending", "paid", "delivered"].includes(status)) {
             return res.status(400).json({message: "Invalid status"});
         }
 
@@ -124,7 +124,7 @@ export async function updateOrderStatus (req, res) {
 
         order.status = status;
 
-        if (status === "shipped" && !order.shippedAt) {
+        if (status === "paid" && !order.paidAt) {
             order.shippedAt = new Date();
         }
 
