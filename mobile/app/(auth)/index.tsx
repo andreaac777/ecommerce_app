@@ -34,9 +34,11 @@ const AuthScreen = () => {
           <View className="gap-2 mt-3 w-full">
             {/* GOOGLE */}
             <TouchableOpacity
-              className="flex-row items-center justify-center bg-white border border-gray-300 rounded-full px-6 py-2"
+              className="flex-row items-center justify-center bg-white border border-gray-300 rounded-full px-6 py-3"
               onPress={() => handleSocialAuth("oauth_google")}
               disabled={loadingStrategy !== null}
+              accessibilityLabel="Continuar con Google"
+              accessibilityRole="button"
               style={{
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.1,
@@ -64,6 +66,8 @@ const AuthScreen = () => {
               className="flex-row items-center justify-center bg-white border border-gray-300 rounded-full px-6 py-3"
               onPress={() => handleSocialAuth("oauth_apple")}
               disabled={loadingStrategy !== null}
+              accessibilityLabel="Continuar con Apple"
+              accessibilityRole="button"
               style={{
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.1,
@@ -88,7 +92,7 @@ const AuthScreen = () => {
           </View>
 
           <Text className="text-center text-text-muted text-xs leading-4 mt-6 px-2">
-            Iniciando sesión usted acepta nuestros{" "}
+            Al iniciar sesión usted acepta nuestros{" "}
             <Text className="text-brand-primary font-medium">
               Términos y Condiciones
             </Text>
