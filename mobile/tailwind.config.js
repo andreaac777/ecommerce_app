@@ -12,7 +12,7 @@ module.exports = {
           accent: "#F4CE14",
         },
         ui: {
-          background: "#F4F4F4",
+          background: "#F9F3E9",
           surface: "#FFFFFF",
           border: "#999999",
         },
