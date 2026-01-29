@@ -31,7 +31,8 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
 
     const renderProduct = ({ item: product }: { item: Product }) => (
         <TouchableOpacity
-            className="bg-ui-surface rounded-3xl overflow-hidden mb-4 mx-2 flex-1"
+            className="bg-ui-surface rounded-3xl overflow-hidden mb-3"
+            style={{ width: "48%" }}
             activeOpacity={0.8}
             //onPress={() => router.push(`/product/${product._id}`)}
         >

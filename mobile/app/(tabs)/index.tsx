@@ -53,14 +53,19 @@ const ShopScreen = () => {
         
         {/* HEADER */}
         <View className="px-6 pb-4 pt-6">
-          <View className="flex-row items-center justify-between mb-6">
-            <View>
-              <Text className="text-text-primary text-3xl font-bold tracking-tight">Tienda</Text>
-              <Text className="text-text-secondary text-sm mt-1">Buscar todos los productos</Text>
+          <View className="flex-row items-center mb-2">
+            <View className="flex-1">
+              <Image
+                source={require("../../assets/images/donpalito.png")}
+                className="w-36 h-36 mb-4"
+                resizeMode="contain"
+              />
             </View>
-            <TouchableOpacity className="bg-brand-secondary/10 p-3 rounded-full">
-              <Ionicons name="options-outline" size={22} color={"#5B3A29"} />
-            </TouchableOpacity>
+            <View className="flex-1 items-end">
+              <TouchableOpacity className="bg-brand-secondary/10 p-3 rounded-full">
+                <Ionicons name="options-outline" size={22} color={"#5B3A29"} />
+              </TouchableOpacity>
+            </View>
           </View>
           {/* SEARCH BAR */}
           <View
