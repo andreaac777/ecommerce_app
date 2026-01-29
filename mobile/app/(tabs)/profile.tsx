@@ -46,7 +46,7 @@ const ProfileScreen = () => {
                   {user?.firstName} {user?.lastName}
                 </Text>
                 <Text className="text-text-secondary text-sm">
-                  {user?.emailAddresses?.[0]?.emailAddress || "No email"}
+                  {user?.emailAddresses?.[0]?.emailAddress || "No verificado"}
                 </Text>
               </View>
             </View>
@@ -74,7 +74,7 @@ const ProfileScreen = () => {
           ))}
         </View>
 
-        {/* NOTIFICATONS BTN */}
+        {/* NOTIFICATIONS BTN */}
         <View className="mb-3 mx-6 mt-5 bg-white rounded-2xl p-4">
           <TouchableOpacity
             className="flex-row items-center justify-between py-2"
@@ -82,7 +82,7 @@ const ProfileScreen = () => {
           >
             <View className="flex-row items-center">
               <Ionicons name="notifications-outline" size={22} color="#333333" />
-              <Text className="text-text-primary font-semibold ml-3">Notifications</Text>
+              <Text className="text-text-primary font-semibold ml-3">Notificaciones</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#333333" />
           </TouchableOpacity>
@@ -97,7 +97,7 @@ const ProfileScreen = () => {
           >
             <View className="flex-row items-center">
               <Ionicons name="shield-checkmark-outline" size={22} color="#333333" />
-              <Text className="text-text-primary font-semibold ml-3">Privacy & Security</Text>
+              <Text className="text-text-primary font-semibold ml-3">Privacidad & Seguridad</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#333333" />
           </TouchableOpacity>
