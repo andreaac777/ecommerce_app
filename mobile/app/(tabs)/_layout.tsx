@@ -14,10 +14,10 @@ const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#C34928",
-        tabBarInactiveTintColor: "#5B3A29",
+        tabBarActiveTintColor: "#5B3A29",
+        tabBarInactiveTintColor: "#FFFFFF",
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "#9A8A80",
           borderTopWidth: 0,
           elevation: 8, // Android
           shadowColor: "#000", // iOS

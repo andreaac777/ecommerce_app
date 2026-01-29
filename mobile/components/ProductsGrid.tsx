@@ -20,7 +20,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
             { productId, quantity: 1 },
             {
                 onSuccess: () => {
-                    Alert.alert("Éxito", `ha agregado ${productName} al carrito`);
+                    Alert.alert("Producto agregado al carrito", `${productName}`);
                 },
                 onError: (error: any) => {
                     Alert.alert("Error", error?.response?.data?.error || "No se pudo agregar el producto al carrito");
@@ -31,7 +31,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
 
     const renderProduct = ({ item: product }: { item: Product }) => (
         <TouchableOpacity
-            className="bg-ui-surface rounded-3xl overflow-hidden mb-3"
+            className="bg-ui-surface/55 rounded-3xl overflow-hidden mb-3"
             style={{ width: "48%" }}
             activeOpacity={0.8}
             //onPress={() => router.push(`/product/${product._id}`)}
@@ -76,7 +76,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
                 </View>
                 
                 <View className="flex-row items-center justify-between">
-                    <Text className="text-brand-primary font-bold text-lg">${product.price} COP</Text>
+                    <Text className="text-brand-accent font-bold text-lg">${product.price} COP</Text>
                     <TouchableOpacity
                         className="bg-brand-secondary/60 rounded-full w-8 h-8 items-center justify-center"
                         activeOpacity={0.7}

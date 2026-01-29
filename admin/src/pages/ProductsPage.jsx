@@ -141,8 +141,12 @@ function ProductsPage() {
               <div className="card-body">
                 <div className="flex items-center gap-6">
                   <div className="avatar">
-                    <div className="w-20 rounded-xl">
-                      <img src={product.images[0] || '/placeholder.png'} alt={product.name} />
+                    <div className="w-24 h-24 rounded-xl bg-white flex items-center justify-center p-3 ring-1 ring-base-300">
+                      <img 
+                        className="w-full h-full object-contain"
+                        src={product.images[0] || '/placeholder.png'} 
+                        alt={product.name} 
+                      />
                     </div>
                   </div>
 
