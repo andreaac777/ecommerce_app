@@ -98,12 +98,12 @@ function DashboardPage() {
                       <td>
                         <div className="text-sm">
                           {order.orderItems[0]?.name}
-                          {order.orderItems.length > 1 && ` +${order.orderItems.length - 1} more`}
+                          {order.orderItems.length > 1 && ` +${order.orderItems.length - 1} más`}
                         </div>
                       </td>
 
                       <td>
-                        <span className="font-semibold">${order.totalPrice.toFixed(2)} COP</span>
+                        <span className="font-semibold">${order.totalPrice} COP</span>
                       </td>
 
                       <td>

@@ -92,7 +92,7 @@ const AuthScreen = () => {
           </View>
 
           <Text className="text-center text-text-muted text-xs leading-4 mt-6 px-2">
-            Al iniciar sesión usted acepta nuestros{" "}
+            Al iniciar sesión aceptas nuestros{" "}
             <Text className="text-brand-primary font-medium">
               Términos y Condiciones
             </Text>

@@ -55,10 +55,10 @@ function WishlistScreen() {
                 <View className="flex-1 items-center justify-center px-6">
                     <Ionicons name="heart-outline" size={80} color="#666666" />
                     <Text className="text-text-primary font-semibold text-xl mt-4">
-                        Su lista de deseos está vacía
+                        Tu lista de deseos está vacía
                     </Text>
                     <Text className="text-text-secondary text-center mt-2">
-                        Lo invitamos a descubrir nuestros productos
+                        Te invitamos a descubrir nuestros productos
                     </Text>
                     <TouchableOpacity
                         className="bg-brand-primary rounded-2xl px-8 py-4 mt-6"
@@ -189,7 +189,7 @@ function ErrorUI() {
                     Error al cargar la lista de deseos
                 </Text>
                 <Text className="text-text-secondary text-center mt-2">
-                    Verifique su conexión a internet e intente de nuevo
+                    Verifica tu conexión a internet e intenta nuevamente
                 </Text>
             </View>
         </SafeScreen>

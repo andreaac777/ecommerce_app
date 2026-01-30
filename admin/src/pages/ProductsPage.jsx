@@ -81,7 +81,7 @@ function ProductsPage() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 3) return alert("Maximum three images allowed");
+    if (files.length > 3) return alert("Solo se permiten hasta 3 imágenes");
 
     // revoke previous blob URLs to free memory
     imagePreviews.forEach((url) => {
@@ -97,7 +97,7 @@ function ProductsPage() {
 
     // for new products, require images
     if (!editingProduct && imagePreviews.length === 0) {
-      return alert("Please upload at least one image");
+      return alert("Se requiere al menos una imagen");
     }
 
     const formDataToSend = new FormData();

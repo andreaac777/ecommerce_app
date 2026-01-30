@@ -108,7 +108,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
         <View className="py-20 items-center justify-center">
             <Ionicons name="alert-circle-outline" size={48} color="#FF6B6B" />
             <Text className="text-text-primary font-semibold mt-4">Error al cargar los productos</Text>
-            <Text className="text-text-secondary text-sm mt-2">Por favor intente nuevamente</Text>
+            <Text className="text-text-secondary text-sm mt-2">Por favor intenta nuevamente</Text>
         </View>
         );
     }
@@ -134,7 +134,7 @@ function NoProductsFound() {
         <View className="py-20 items-center justify-center">
             <Ionicons name="search-outline" size={48} color={"#666"} />
             <Text className="text-text-primary font-semibold mt-4">No se encontraron productos</Text>
-            <Text className="text-text-secondary text-sm mt-2">Intente ajustar los filtros</Text>
+            <Text className="text-text-secondary text-sm mt-2">Ajusta los filtros para encontrar más productos</Text>
         </View>
     );
 }
