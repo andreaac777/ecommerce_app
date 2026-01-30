@@ -15,9 +15,9 @@ function useSocialAuth() {
                 await setActive({ session: createdSessionId });
             }
         } catch (error) {
-            console.error("Error de Autenticación:", error);
+            console.error("Error in social auth:", error);
             const provider = strategy === "oauth_google" ? "Google" : "Apple";
-            Alert.alert("Error", `Error al iniciar sesión con ${provider}. Por favor, intenta de nuevo.`);
+            Alert.alert("Error", `Failed to sign in with ${provider}. Please try again.`);
         } finally {
             setLoadingStrategy(null);
         }
