@@ -17,6 +17,7 @@ function ProductsPage() {
   });
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const queryClient = useQueryClient();
 
@@ -179,13 +180,9 @@ function ProductsPage() {
                     </button>
                     <button
                       className="btn btn-square btn-ghost text-error"
-                      onClick={() => deleteProductMutation.mutate(product._id)}
+                      onClick={() => setProductToDelete(product)}
                     >
-                      {deleteProductMutation.isPending ? (
-                        <span className="loading loading-spinner"></span>
-                      ) : (
                         <Trash2Icon className="w-5 h-5" />
-                      )}
                     </button>
                   </div>
                 </div>
@@ -356,6 +353,48 @@ function ProductsPage() {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <input
+        type="checkbox"
+        className="modal-toggle"
+        checked={!!productToDelete}
+      />
+
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">
+            Eliminar Producto
+          </h3>
+
+          <p className="py-4">
+            ¿Estás seguro de que deseas eliminar el producto?
+          </p>
+
+          <div className="modal-action">
+            <button
+              className="btn"
+              onClick={() => setProductToDelete(null)}
+            >
+              Cancelar
+            </button>
+
+            <button
+              className="btn"
+              onClick={() => {
+                deleteProductMutation.mutate(productToDelete._id);
+                setProductToDelete(null);
+              }}
+            >
+              {deleteProductMutation.isPending ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                "Eliminar"
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
