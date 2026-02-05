@@ -14,18 +14,20 @@ export const useAddresses = () => {
         queryKey: ["addresses"],
         queryFn: async () => {
             const { data } = await api.get<{ addresses: Address[] }>("/users/addresses");
-            return data.addresses;
+            return data.addresses || [];
         },
     });
+
+    const handleSuccess = (data: { addresses: Address[] }) => {
+        queryClient.setQueryData(["addresses"], data.addresses);
+    };
 
     const addAddressMutation = useMutation({
         mutationFn: async (addressData: Omit<Address, "_id">) => {
             const { data } = await api.post<{ addresses: Address[] }>("/users/addresses", addressData);
-            return data.addresses;
+            return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["addresses"] });
-        },
+        onSuccess: handleSuccess,
     });
 
     const updateAddressMutation = useMutation({
@@ -40,21 +42,17 @@ export const useAddresses = () => {
                 `/users/addresses/${addressId}`,
                 addressData
             );
-            return data.addresses;
+            return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["addresses"] });
-        },
+        onSuccess: handleSuccess,
     });
 
     const deleteAddressMutation = useMutation({
         mutationFn: async (addressId: string) => {
             const { data } = await api.delete<{ addresses: Address[] }>(`/users/addresses/${addressId}`);
-            return data.addresses;
+            return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["addresses"] });
-        },
+        onSuccess: handleSuccess,
     });
 
     return {

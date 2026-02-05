@@ -1,22 +1,60 @@
 import { useAuth } from "@clerk/clerk-expo";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
-// It works in simulator
-const API_URL = "http://10.0.2.2:3000/api";
+const getApiUrl = () => {
+  // En producción
+  if (!__DEV__) {
+    return "https://tu-dominio-produccion.com/api"; // ← Cambia esto cuando despliegues
+  }
+
+  // En desarrollo
+  // Intentar obtener la IP automáticamente del debugger de Expo
+  const debuggerHost = Constants.expoConfig?.hostUri?.split(":").shift();
+
+  if (debuggerHost) {
+    // Si Expo detectó la IP automáticamente (dispositivo físico)
+    console.log("📱 Usando IP detectada por Expo:", debuggerHost);
+    return `http://${debuggerHost}:3000/api`;
+  }
+
+  if (Platform.OS === "android") {
+    console.log("🤖 Usando IP del emulador Android");
+    return "http://10.0.2.2:3000/api";
+  }
+
+  const MANUAL_IP = "192.168.40.137"; 
+  console.log("💻 Usando IP manual:", MANUAL_IP);
+  return `http://${MANUAL_IP}:3000/api`
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 90000,
+
+  validateStatus: (status) => {
+    return status < 500;
+  },
 });
 
 export const useApi = () => {
   const { getToken } = useAuth();
+  const interceptorId = useRef<number | null>(null);
 
   useEffect(() => {
-    const interceptor = api.interceptors.request.use(async (config) => {
+    
+    if (interceptorId.current !== null) {
+      api.interceptors.request.eject(interceptorId.current);
+    }
+
+    interceptorId.current = api.interceptors.request.use(async (config) => {
       const token = await getToken();
 
       if (token) {
@@ -26,15 +64,13 @@ export const useApi = () => {
       return config;
     });
 
-    // cleanup: remove interceptor when component unmounts
-
     return () => {
-      api.interceptors.request.eject(interceptor);
+      if (interceptorId.current !== null) {
+        api.interceptors.request.eject(interceptorId.current);
+      }
     };
   }, [getToken]);
-
+  
   return api;
-};
 
-// on every single req, we would like have an auth token so that our backend knows that we're authenticated
-// we're including the auth token under the auth headers
+};

@@ -35,8 +35,8 @@ function WishlistScreen() {
         );
     };
 
-    if (isLoading) return <LoadingUI />;
-    if (isError) return <ErrorUI />;
+    if (isLoading && !wishlist) return <LoadingUI />;
+    if (isError && !wishlist) return <ErrorUI />;
 
     return (
         <SafeScreen>
@@ -60,13 +60,6 @@ function WishlistScreen() {
                     <Text className="text-text-secondary text-center mt-2">
                         Te invitamos a descubrir nuestros productos
                     </Text>
-                    <TouchableOpacity
-                        className="bg-brand-primary rounded-2xl px-8 py-4 mt-6"
-                        activeOpacity={0.8}
-                        onPress={() => router.push("/(tabs)")}
-                    >
-                        <Text className="text-white font-bold">Ver Productos</Text>
-                    </TouchableOpacity>
                 </View>
             ) : (
                 <ScrollView
@@ -133,16 +126,12 @@ function WishlistScreen() {
                             {item.stock > 0 && (
                                 <View className="px-4 pb-4">
                                     <TouchableOpacity
-                                    className="bg-brand-primary rounded-xl py-3 items-center"
-                                    activeOpacity={0.8}
-                                    onPress={() => handleAddToCart(item._id, item.name)}
-                                    disabled={isAddingToCart}
+                                        className="bg-brand-primary rounded-xl py-3 items-center"
+                                        activeOpacity={0.8}
+                                        onPress={() => handleAddToCart(item._id, item.name)}
+                                        disabled={isAddingToCart}
                                     >
-                                    {isAddingToCart ? (
-                                        <ActivityIndicator size="small" color="#5B3A29" />
-                                    ) : (
                                         <Text className="text-white font-bold">Agregar al Carrito</Text>
-                                    )}
                                     </TouchableOpacity>
                                 </View>
                             )}

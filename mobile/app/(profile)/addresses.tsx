@@ -122,8 +122,8 @@ function AddressesScreen() {
     setEditingAddressId(null);
   };
 
-  if (isLoading) return <LoadingUI />;
-  if (isError) return <ErrorUI />;
+  if (isLoading && !addresses) return <LoadingUI />;
+  if (isError && !addresses) return <ErrorUI />;
 
   return (
     <SafeScreen>

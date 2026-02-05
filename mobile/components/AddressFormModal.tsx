@@ -1,4 +1,4 @@
-import { View, Text, Modal, TouchableOpacity, ScrollView, TextInput, Switch, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Modal, TouchableOpacity, ScrollView, TextInput, Switch, KeyboardAvoidingView, Platform } from "react-native";
 import SafeScreen from "./SafeScreen";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -135,13 +135,9 @@ const AddressFormModal = ({
                 onPress={onSave}
                 disabled={isAddingAddress || isUpdatingAddress}
               >
-                {isAddingAddress || isUpdatingAddress ? (
-                  <ActivityIndicator size="small" color="#5B3A29" />
-                ) : (
-                  <Text className="text-white font-bold text-lg">
-                    {isEditing ? "Guardar Cambios" : "Agregar Dirección"}
-                  </Text>
-                )}
+                <Text className="text-white font-bold text-lg">
+                  {isEditing ? "Guardar Cambios" : "Agregar Dirección"}
+                </Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

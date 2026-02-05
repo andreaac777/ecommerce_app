@@ -1,11 +1,16 @@
 import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
 
+const getPopulatedCart = async (clerkId) => {
+    return await Cart.findOne({ clerkId }).populate("items.product");
+};
+
 export async function getCart(req, res) {
     try {
-        let cart = await Cart.findOne({ clerkId: req.user.clerkId }).populate("items.product");
+        let cart = await getPopulatedCart(req.user.clerkId);
 
         if (!cart) {
+
             const user = req.user;
 
             cart = await Cart.create({
@@ -14,7 +19,6 @@ export async function getCart(req, res) {
                 items: [],
             });
         }
-
         return res.status(200).json({ cart });
     } catch (error) {
         console.error("Error in getCart controller:", error);
@@ -39,11 +43,10 @@ export async function addToCart(req, res) {
         let cart = await Cart.findOne({ clerkId: req.user.clerkId });
 
         if (!cart) {
-            const user = req.user;
 
             cart = await Cart.create({
-                user: user._id,
-                clerkId: user.clerkId,
+                user: req.user._id,
+                clerkId: req.user.clerkId,
                 items: [],
             });
         }
@@ -52,7 +55,7 @@ export async function addToCart(req, res) {
         const existingItem = cart.items.find((item) => item.product.toString() === productId);
         if (existingItem) {
             // increment quantity by 1
-            const newQuantity = existingItem.quantity + 1;
+            const newQuantity = existingItem.quantity + quantity;
             if (product.stock < newQuantity) {
                 return res.status(400).json({ error: "Insufficient stock" });
             }
@@ -64,7 +67,9 @@ export async function addToCart(req, res) {
 
         await cart.save();
 
-        return res.status(200).json({ message: "Item added to cart", cart });
+        const updatedCart = await getPopulatedCart(req.user.clerkId);
+
+        return res.status(200).json({ cart: updatedCart });
     } catch (error) {
         console.error("Error in addToCart controller:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -103,7 +108,9 @@ export async function updateCartItem(req, res) {
         cart.items[itemIndex].quantity = quantity;
         await cart.save();
 
-        return res.status(200).json({ message: "Cart updated successfully", cart });
+        const updatedCart = await getPopulatedCart(req.user.clerkId);
+
+        return res.status(200).json({ cart: updatedCart });
     } catch (error) {
         console.error("Error in updateCartItem controller:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -122,7 +129,9 @@ export async function removeFromCart(req, res) {
         cart.items = cart.items.filter((item) => item.product.toString() !== productId);
         await cart.save();
 
-        return res.status(200).json({ message: "Item removed from cart", cart });
+        const updatedCart = await getPopulatedCart(req.user.clerkId);
+
+        return res.status(200).json({ cart: updatedCart });
     } catch (error) {
         console.error("Error in removeFromCart controller:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -139,7 +148,9 @@ export const clearCart = async (req, res) => {
         cart.items = [];
         await cart.save();
 
-        return res.status(200).json({ message: "Cart cleared", cart });
+        const updatedCart = await getPopulatedCart(req.user.clerkId);
+
+        return res.status(200).json({ cart: updatedCart });
     } catch (error) {
         console.error("Error in clearCart controller:", error);
         return res.status(500).json({ error: "Internal server error" });

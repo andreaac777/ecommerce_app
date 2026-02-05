@@ -15,11 +15,35 @@ import orderRoutes from "./routes/order.routes.js"
 import reviewRoutes from "./routes/review.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import paymentRoutes from "./routes/payment.routes.js"
 
 
 const app = express();
 
 const __dirname = path.resolve();
+
+const corsOptions = {
+  origin: ENV.NODE_ENV === "production" 
+    ? ENV.CLIENT_URL  
+    : '*',           
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'clerk-session-id']
+};
+
+app.use(cors(corsOptions));
+
+app.use(
+  "/api/payment",
+  (req, res, next) => {
+    if (req.originalUrl === "/api/payment/webhook") {
+      express.raw({ type: "application/json" })(req, res, next);
+    } else {
+      express.json()(req, res, next);
+    }
+  },
+  paymentRoutes
+);
 
 app.use(express.json());
 
@@ -44,7 +68,13 @@ app.use("/api/inngest", serve({client:inngest, functions}));
 
 app.use(clerkMiddleware());
 
-app.use(cors({origin:ENV.CLIENT_URL, credentials:true}));
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "API funcionando correctamente",
+    status: "ok",
+    endpoints: ["/api/health", "/api/products", "/api/cart"]
+  });
+});
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
@@ -67,8 +97,13 @@ if (ENV.NODE_ENV === "production") {
 
 const startServer = async () => {
     await connectDB();
-    app.listen(ENV.PORT, () => {
-        console.log(`Server is up and running on port ${ENV.PORT}`);
+    const HOST = '0.0.0.0';
+    const PORT = ENV.PORT || 3000;
+    app.listen(PORT, HOST, () => {
+      console.log('🚀 Server is up and running!');
+      console.log(`💻 Local:        http://localhost:${PORT}`);
+      console.log(`📱 Network:      http://192.168.40.137:${PORT}`);
+      console.log(`🌍 Environment:  ${ENV.NODE_ENV || 'development'}`);
     });
 };
 

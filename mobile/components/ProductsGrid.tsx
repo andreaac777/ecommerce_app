@@ -52,15 +52,11 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
                     onPress={() => toggleWishlist(product._id)}
                     disabled={isAddingToWishlist || isRemovingFromWishlist}
                 >
-                    {isAddingToWishlist || isRemovingFromWishlist ? (
-                    <ActivityIndicator size="small" color="#5B3A29" />
-                    ) : (
                     <Ionicons
                         name={isInWishlist(product._id) ? "heart" : "heart-outline"}
                         size={18}
                         color={isInWishlist(product._id) ? "#C34928" : "#5B3A29"}
                     />
-                    )}
                 </TouchableOpacity>
             </View>
             
@@ -86,11 +82,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
                         onPress={() => handleAddToCart(product._id, product.name)}
                         disabled={isAddingToCart}
                     >
-                        {isAddingToCart ? (
-                            <ActivityIndicator size="small" color="#5B3A29" />
-                        ) : (
-                            <Ionicons name="add" size={18} color="#fff" />
-                        )}
+                        <Ionicons name="add" size={18} color="#FFFFFF" />
                     </TouchableOpacity>
                 </View>
             </View>

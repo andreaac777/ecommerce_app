@@ -4,6 +4,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import * as Sentry from "@sentry/react-native";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 Sentry.init({
   dsn: 'https://b37e0e13c1373f59805ce91487069e00@o4510774265905152.ingest.us.sentry.io/4510787013771264',
@@ -25,6 +26,19 @@ Sentry.init({
 });
 
 const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      placeholderData: (previousData: any) => previousData,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
   queryCache: new QueryCache({
     onError: (error: any, query) => {
       Sentry.captureException(error, {
@@ -58,7 +72,9 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{headerShown: false}}/>
+        <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}>
+          <Stack screenOptions={{ headerShown: false }} />
+        </StripeProvider>
       </QueryClientProvider>
     </ClerkProvider>
   )

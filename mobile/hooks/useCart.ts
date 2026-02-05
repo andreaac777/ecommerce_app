@@ -13,47 +13,53 @@ const useCart = () => {
     } = useQuery({
         queryKey: ["cart"],
         queryFn: async () => {
-        const { data } = await api.get<{ cart: Cart }>("/cart");
-        return data.cart;
+            const { data } = await api.get<{ cart: Cart }>("/cart");
+            return data.cart || { items: [] };
         },
     });
 
+    const handleSuccess = (data: { cart: Cart }) => {
+        queryClient.setQueryData(["cart"], data.cart);
+    };
+
     const addToCartMutation = useMutation({
-        mutationFn: async ({ productId, quantity = 1 }: { productId: string; quantity?: number }) => {
-        const { data } = await api.post<{ cart: Cart }>("/cart", { productId, quantity });
-        return data.cart;
+        mutationFn: async (payload: { productId: string; quantity?: number }) => {
+            const { data } = await api.post<{ cart: Cart }>("/cart", payload);
+            return data;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cart"] }),
+        onSuccess: handleSuccess,
     });
 
     const updateQuantityMutation = useMutation({
         mutationFn: async ({ productId, quantity }: { productId: string; quantity: number }) => {
-        const { data } = await api.put<{ cart: Cart }>(`/cart/${productId}`, { quantity });
-        return data.cart;
+            const { data } = await api.put<{ cart: Cart }>(`/cart/${productId}`, { quantity });
+            return data;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cart"] }),
+        onSuccess: handleSuccess,
     });
 
     const removeFromCartMutation = useMutation({
         mutationFn: async (productId: string) => {
-        const { data } = await api.delete<{ cart: Cart }>(`/cart/${productId}`);
-        return data.cart;
+            const { data } = await api.delete<{ cart: Cart }>(`/cart/${productId}`);
+            return data;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cart"] }),
+        onSuccess: handleSuccess,
     });
 
     const clearCartMutation = useMutation({
         mutationFn: async () => {
-        const { data } = await api.delete<{ cart: Cart }>("/cart");
-        return data.cart;
+            const { data } = await api.delete<{ cart: Cart }>("/cart");
+            return data;
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cart"] }),
+        onSuccess: handleSuccess,
     });
 
-    const cartTotal =
-        cart?.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) ?? 0;
+    const cartTotal = cart?.items?.reduce((sum, item) => {
+        const price = item.product?.price || 0;
+        return sum + price * item.quantity;
+    }, 0) ?? 0;
 
-    const cartItemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+    const cartItemCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
     return {
         cart,
