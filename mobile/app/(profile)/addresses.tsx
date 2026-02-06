@@ -201,7 +201,7 @@ function ErrorUI() {
           Error al cargar tus direcciones
         </Text>
         <Text className="text-text-secondary text-center mt-2">
-          Por favor, verifica tu conexión e intenta nuevamente
+          Verifica tu conexión e intenta nuevamente
         </Text>
       </View>
     </SafeScreen>

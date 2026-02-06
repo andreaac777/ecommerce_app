@@ -178,7 +178,7 @@ function ErrorUI() {
                     Error al cargar la lista de deseos
                 </Text>
                 <Text className="text-text-secondary text-center mt-2">
-                    Verifica tu conexión a internet e intenta nuevamente
+                    Verifica tu conexión e intenta nuevamente
                 </Text>
             </View>
         </SafeScreen>
