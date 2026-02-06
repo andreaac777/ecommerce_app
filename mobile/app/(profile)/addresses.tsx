@@ -125,8 +125,8 @@ function AddressesScreen() {
     setEditingAddressId(null);
   };
 
-  if (isLoading && !addresses) return <LoadingState />;
-  if (isError && !addresses) return <ErrorState />;
+  if (isLoading && !addresses) return <SafeScreen><LoadingState /></SafeScreen>;
+  if (isError && !addresses) return <SafeScreen><ErrorState /></SafeScreen>;
 
   return (
     <SafeScreen>
@@ -136,7 +136,7 @@ function AddressesScreen() {
         <EmptyState
           icon="location-outline"
           title="No tienes direcciones registradas"
-          description="Agrega tu direccion de entrega"
+          description="Agrega tu dirección de entrega"
         >
           <TouchableOpacity
             className="bg-brand-primary rounded-2xl py-4 px-6 items-center"

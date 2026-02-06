@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ReactNode } from "react";
+import { Header } from "./Header";
 
 interface EmptyStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -22,14 +23,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View className="flex-1 bg-ui-background">
-      {header && (
-        <View className="px-6 pt-5 pb-5 flex-row items-center">
-          <TouchableOpacity onPress={() => router.back()} className="mr-4">
-            <Ionicons name="arrow-back" size={28} color="#5B3A29" />
-          </TouchableOpacity>
-          <Text className="text-brand-secondary text-2xl font-bold">{header}</Text>
-        </View>
-      )}
+      {header && <Header header={header} />}
       <View className="flex-1 items-center justify-center">
         <Ionicons name={icon} size={iconSize} color="#666" />
         <Text className="text-text-primary font-semibold text-xl mt-4">{title}</Text>

@@ -198,11 +198,11 @@ const CartScreen = () => {
   };
 
   if (isLoading) {
-    return <LoadingState />;
+    return <SafeScreen><LoadingState /></SafeScreen>;
   }
 
   if (isError) {
-    return <ErrorState />;
+    return <SafeScreen><ErrorState /></SafeScreen>;
   }
 
   return (

@@ -2,6 +2,7 @@ import SafeScreen from "@/components/SafeScreen";
 import { Header } from "@/components/Header";
 import { ErrorState } from "@/components/ErrorState";
 import LoadingState from "@/components/LoadingState";
+import { EmptyState } from "@/components/EmptyState";
 import useCart from "@/hooks/useCart";
 import useWishlist from "@/hooks/useWishlist";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,22 +39,18 @@ function WishlistScreen() {
         );
     };
 
-    if (isLoading && !wishlist) return <LoadingState />;
-    if (isError && !wishlist) return <ErrorState />;
+    if (isLoading && !wishlist) return <SafeScreen><LoadingState /></SafeScreen>;
+    if (isError && !wishlist) return <SafeScreen><ErrorState /></SafeScreen>;
 
     return (
         <SafeScreen>
             <Header header="Lista de Deseos" />
             {wishlist.length === 0 ? (
-                <View className="flex-1 items-center justify-center px-6">
-                    <Ionicons name="heart-outline" size={80} color="#666666" />
-                    <Text className="text-text-primary font-semibold text-xl mt-4">
-                        Tu lista de deseos está vacía
-                    </Text>
-                    <Text className="text-text-secondary text-center mt-2">
-                        Te invitamos a descubrir nuestros productos
-                    </Text>
-                </View>
+                <EmptyState
+                    icon="heart-outline"
+                    title="Tu lista de deseos está vacía"
+                    description="Te invitamos a descubrir nuestros productos"
+                />
             ) : (
                 <ScrollView
                 className="flex-1"

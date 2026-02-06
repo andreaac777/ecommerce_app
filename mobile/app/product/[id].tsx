@@ -51,8 +51,8 @@ const ProductDetailScreen = () => {
     );
   };
 
-  if (isLoading) return <LoadingState />;
-  if (isError || !product) return <ErrorState />;
+  if (isLoading) return <SafeScreen><LoadingState /></SafeScreen>;
+  if (isError || !product) return <SafeScreen><ErrorState /></SafeScreen>;
 
   const inStock = product.stock > 0;
 
