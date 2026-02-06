@@ -4,6 +4,7 @@ import { Review } from "../models/review.model.js";
 
 export async function createReview(req, res) {
     try {
+        
         const { productId, orderId, rating } = req.body;
 
         if (!rating || rating < 1 || rating > 5) {
@@ -12,8 +13,9 @@ export async function createReview(req, res) {
 
         const user = req.user;
 
-        // verify order exists and is delivered
         const order = await Order.findById(orderId);
+
+        // verify order exists and is delivered
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
@@ -43,7 +45,8 @@ export async function createReview(req, res) {
 
         // update the product rating with atomic aggregation
         const reviews = await Review.find({ productId });
-        const totalRating = reviews.reduce((sum, rev) => sum + rev.rating, 0);
+        const totalRating = reviews.reduce((sum, rev) => sum + rev.rating, 0);        
+        
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             {
@@ -58,7 +61,10 @@ export async function createReview(req, res) {
             return res.status(404).json({ error: "Product not found" });
         }
 
-        return res.status(201).json({ message: "Review submitted successfully", review });
+        return res.status(201).json({ 
+            message: "Review submitted successfully", 
+            review
+        });
     } catch (error) {
         console.error("Error in createReview controller:", error);
         return res.status(500).json({ error: "Internal server error" });
@@ -81,6 +87,7 @@ export async function deleteReview(req, res) {
         }
 
         const productId = review.productId;
+
         await Review.findByIdAndDelete(reviewId);
 
         const reviews = await Review.find({ productId });
