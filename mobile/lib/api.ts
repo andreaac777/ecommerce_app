@@ -96,7 +96,7 @@ export const useApi = () => {
       async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
           console.log("🔄 Detectado error 401, intentando refrescar token...");
           
           originalRequest._retry = true;
