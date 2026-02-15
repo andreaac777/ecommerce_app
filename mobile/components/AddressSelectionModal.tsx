@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator, Dimensions } from "react-native";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 const FOOTER_HEIGHT = 96;
 
 interface AddressSelectionModalProps {

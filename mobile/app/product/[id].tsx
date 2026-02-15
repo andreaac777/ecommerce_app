@@ -38,17 +38,14 @@ const ProductDetailScreen = () => {
     setQuantityText(String(clamped));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
-    addToCart(
-      { productId: product._id, quantity },
-      {
-        onSuccess: () => Alert.alert("Éxito", `${product.name} agregado al carrito`),
-        onError: (error: any) => {
-          Alert.alert("Error", error?.response?.data?.error || "Error al agregar el producto al carrito");
-        },
-      }
-    );
+    try {
+      await addToCart({ productId: product._id, quantity });
+      Alert.alert("Éxito", `${product.name} agregado al carrito`);
+    } catch (error: any) {
+      Alert.alert("Error", error?.response?.data?.error || "Error al agregar el producto al carrito");
+    }
   };
 
   if (isLoading) return <SafeScreen><LoadingState /></SafeScreen>;
@@ -115,9 +112,8 @@ const ProductDetailScreen = () => {
             {product.images.map((_: any, index: number) => (
               <View
                 key={index}
-                className={`h-2 rounded-full ${
-                  index === selectedImageIndex ? "bg-brand-accent w-6" : "bg-brand-secondary/50 w-2"
-                }`}
+                className={`h-2 rounded-full ${index === selectedImageIndex ? "bg-brand-accent w-6" : "bg-brand-secondary/50 w-2"
+                  }`}
               />
             ))}
           </View>
@@ -162,7 +158,7 @@ const ProductDetailScreen = () => {
 
           {/* Price */}
           <View className="flex-row items-center mb-6">
-            <Text className="text-brand-accent text-4xl font-bold">${ product.price } COP</Text>
+            <Text className="text-brand-accent text-4xl font-bold">${product.price} COP</Text>
           </View>
 
           {/* Quantity */}
@@ -176,9 +172,9 @@ const ProductDetailScreen = () => {
                 activeOpacity={0.7}
                 disabled={!inStock || quantity <= 1}
               >
-                <Ionicons 
-                  name="remove" 
-                  size={24} 
+                <Ionicons
+                  name="remove"
+                  size={24}
                   color="#FFFFFF"
                 />
               </TouchableOpacity>
@@ -233,13 +229,12 @@ const ProductDetailScreen = () => {
           <View className="flex-1">
             <Text className="text-text-primary text-sm font-bold mb-1">Total</Text>
             <Text className="text-brand-accent text-2xl font-bold">
-              ${(product.price * quantity).toLocaleString()} COP
+              ${(product.price * quantity)} COP
             </Text>
           </View>
           <TouchableOpacity
-            className={`rounded-2xl px-8 py-4 flex-row items-center ${
-              !inStock ? "bg-brand-secondary/20" : "bg-brand-primary"
-            }`}
+            className={`rounded-2xl px-8 py-4 flex-row items-center ${!inStock ? "bg-brand-secondary/20" : "bg-brand-primary"
+              }`}
             activeOpacity={0.8}
             onPress={handleAddToCart}
             disabled={!inStock || isAddingToCart}

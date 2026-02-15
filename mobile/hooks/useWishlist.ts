@@ -18,24 +18,20 @@ const useWishlist = () => {
     },
   });
 
-  const handleSuccess = (data: { wishlist: Product[] }) => {
-    queryClient.setQueryData(["wishlist"], data.wishlist);
-  };
-
   const addToWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const { data } = await api.post<{ wishlist: Product[] }>("/users/wishlist", { productId });
-      return data;
+      const { data } = await api.post<{ wishlist: string[] }>("/users/wishlist", { productId });
+      return data.wishlist;
     },
-    onSuccess: handleSuccess,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["wishlist"] }),
   });
 
   const removeFromWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const { data } = await api.delete<{ wishlist: Product[] }>(`/users/wishlist/${productId}`);
-      return data;
+      const { data } = await api.delete<{ wishlist: string[] }>(`/users/wishlist/${productId}`);
+      return data.wishlist;
     },
-    onSuccess: handleSuccess,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["wishlist"] }),
   });
 
   const isInWishlist = (productId: string) => {

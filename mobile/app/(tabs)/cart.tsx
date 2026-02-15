@@ -43,9 +43,8 @@ const CartScreen = () => {
 
   const cartItems = cart?.items || [];
   const subtotal = cartTotal;
-  const shipping = 10000; 
-  const tax = Math.round(subtotal * 0.19);
-  const total = subtotal + shipping + tax;
+  const shipping = 10000;
+  const total = subtotal + shipping;
 
   const handleQuantityChange = (productId: string, currentQuantity: number, change: number) => {
     const newQuantity = currentQuantity + change;
@@ -54,7 +53,7 @@ const CartScreen = () => {
   };
 
   const handleRemoveItem = (productId: string, productName: string) => {
-      Alert.alert("Eliminar Producto", `¿Desea eliminar ${productName} del carrito?`, [
+    Alert.alert("Eliminar Producto", `¿Desea eliminar ${productName} del carrito?`, [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Eliminar",
@@ -169,9 +168,9 @@ const CartScreen = () => {
           itemCount: cartItems.length,
         });
 
-        Alert.alert("Éxito", "Tu pago se realizó correctamente. Tu orden será procesada.", 
+        Alert.alert("Éxito", "Tu pago se realizó correctamente. Tu orden será procesada.",
           [
-            { text: "OK", onPress: () => {} },
+            { text: "OK", onPress: () => { } },
           ]);
         clearCart();
       }
@@ -184,7 +183,7 @@ const CartScreen = () => {
       });
 
       let errorMessage = "Error al procesar el pago. Por favor, intenta de nuevo.";
-      
+
       if (error?.response?.data?.error) {
         errorMessage = error.response.data.error;
       } else if (error?.message) {
@@ -197,18 +196,18 @@ const CartScreen = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && cartItems.length === 0) {
     return <SafeScreen><LoadingState /></SafeScreen>;
   }
 
-  if (isError) {
+  if (isError && cartItems.length === 0) {
     return <SafeScreen><ErrorState /></SafeScreen>;
   }
 
   return (
     <SafeScreen>
       <Header header="Carrito" />
-      {cartItems.length === 0 ? (
+      {!isLoading && cartItems.length === 0 ? (
         <EmptyState
           icon="cart-outline"
           title="Tu carrito está vacío"
@@ -228,18 +227,18 @@ const CartScreen = () => {
                     {/* product image */}
                     <View className="relative">
                       <View className="flex-1"
-                          style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: 16,
-                            overflow: 'hidden',         
-                            backgroundColor: '#FFFFFF'  
-                          }}  
+                        style={{
+                          width: 100,
+                          height: 100,
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          backgroundColor: '#FFFFFF'
+                        }}
                       >
                         <Image
-                            source={item.product.images[0]}
-                            style={{ width: '100%', height: '100%' }}
-                            contentFit="contain"
+                          source={item.product.images[0]}
+                          style={{ width: '100%', height: '100%' }}
+                          contentFit="contain"
                         />
                       </View>
                       <View className="absolute top-2 right-2 bg-brand-primary rounded-full px-2 py-0.5">
@@ -299,13 +298,16 @@ const CartScreen = () => {
                           <Ionicons name="trash-outline" size={18} color="#EF4444" />
                         </TouchableOpacity>
                       </View>
+                      {item.quantity >= item.product.stock && (
+                        <Text className="text-orange-500 text-sm mt-2">Seleccionaste la cantidad máxima disponible</Text>
+                      )}
                     </View>
                   </View>
                 </View>
               ))}
             </View>
 
-            <OrderSummary subtotal={subtotal} shipping={shipping} tax={tax} total={total} />
+            <OrderSummary subtotal={subtotal} shipping={shipping} total={total} />
           </ScrollView>
           <View
             className="absolute bottom-0 left-0 right-0 bg-brand-secondary/20 backdrop-blur-xl border-t border-brand-secondary/30 pt-4 pb-16 px-6"
