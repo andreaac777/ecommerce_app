@@ -6,27 +6,22 @@ import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Alert
 import useCart from "@/hooks/useCart";
 
 interface ProductsGridProps {
-  isLoading: boolean;
-  isError: boolean;
-  products: Product[];
+    isLoading: boolean;
+    isError: boolean;
+    products: Product[];
 }
 
-const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
+const ProductsGrid = ({ products, isLoading, isError }: ProductsGridProps) => {
     const { isInWishlist, toggleWishlist, isAddingToWishlist, isRemovingFromWishlist } = useWishlist();
     const { isAddingToCart, addToCart } = useCart();
-  
-    const handleAddToCart = (productId: string, productName: string) => {
-        addToCart(
-            { productId, quantity: 1 },
-            {
-                onSuccess: () => {
-                    Alert.alert("Producto agregado al carrito", `${productName}`);
-                },
-                onError: (error: any) => {
-                    Alert.alert("Error", error?.response?.data?.error || "No se pudo agregar el producto al carrito");
-                },
-            },
-        );
+
+    const handleAddToCart = async (productId: string, productName: string) => {
+        try {
+            await addToCart({ productId, quantity: 1 });
+            Alert.alert("Producto agregado al carrito", `${productName}`);
+        } catch (error: any) {
+            Alert.alert("Error", error?.response?.data?.error || "No se pudo agregar el producto al carrito");
+        }
     };
 
     const renderProduct = ({ item: product }: { item: Product }) => (
@@ -59,13 +54,13 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
                     />
                 </TouchableOpacity>
             </View>
-            
+
             <View className="p-3">
                 <Text className="text-text-secondary text-xs mb-1">{product.category}</Text>
                 <Text className="text-text-primary font-bold text-sm mb-2" numberOfLines={2}>
                     {product.name}
                 </Text>
-                
+
                 <View className="flex-row items-center mb-2">
                     <Ionicons name="star" size={12} color="#FFC107" />
                     <Text className="text-text-primary text-xs font-semibold ml-1">
@@ -73,7 +68,7 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
                     </Text>
                     <Text className="text-text-secondary text-xs ml-1">({product.totalReviews})</Text>
                 </View>
-                
+
                 <View className="flex-row items-center justify-between">
                     <Text className="text-brand-accent font-bold text-lg">${product.price} COP</Text>
                     <TouchableOpacity
@@ -91,20 +86,20 @@ const ProductsGrid = ({products, isLoading, isError}: ProductsGridProps) => {
 
     if (isLoading) {
         return (
-        <View className="py-20 items-center justify-center">
-            <ActivityIndicator size="large" color="#5B3A29" />
-            <Text className="text-text-secondary mt-4">Cargando productos...</Text>
-        </View>
+            <View className="py-20 items-center justify-center">
+                <ActivityIndicator size="large" color="#5B3A29" />
+                <Text className="text-text-secondary mt-4">Cargando productos...</Text>
+            </View>
         );
     }
 
     if (isError) {
         return (
-        <View className="py-20 items-center justify-center">
-            <Ionicons name="alert-circle-outline" size={48} color="#FF6B6B" />
-            <Text className="text-text-primary font-semibold mt-4">Error al cargar los productos</Text>
-            <Text className="text-text-secondary text-sm mt-2">Por favor intenta nuevamente</Text>
-        </View>
+            <View className="py-20 items-center justify-center">
+                <Ionicons name="alert-circle-outline" size={48} color="#FF6B6B" />
+                <Text className="text-text-primary font-semibold mt-4">Error al cargar los productos</Text>
+                <Text className="text-text-secondary text-sm mt-2">Por favor intenta nuevamente</Text>
+            </View>
         );
     }
 

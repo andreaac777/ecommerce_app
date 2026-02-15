@@ -125,14 +125,14 @@ function AddressesScreen() {
     setEditingAddressId(null);
   };
 
-  if (isLoading && !addresses) return <SafeScreen><LoadingState /></SafeScreen>;
-  if (isError && !addresses) return <SafeScreen><ErrorState /></SafeScreen>;
+  if (isLoading && addresses.length === 0) return <SafeScreen><LoadingState /></SafeScreen>;
+  if (isError && addresses.length === 0) return <SafeScreen><ErrorState /></SafeScreen>;
 
   return (
     <SafeScreen>
       <Header header="Direcciones" />
 
-      {addresses.length === 0 ? (
+      {!isLoading && addresses.length === 0 ? (
         <EmptyState
           icon="location-outline"
           title="No tienes direcciones registradas"

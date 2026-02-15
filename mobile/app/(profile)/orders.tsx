@@ -9,7 +9,6 @@ import { useReviews } from "@/hooks/useReviews";
 import { formatDate, getOrderStatus } from "@/lib/utils";
 import { Order } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 

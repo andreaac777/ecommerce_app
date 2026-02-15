@@ -3,11 +3,10 @@ import { View, Text } from "react-native";
 interface OrderSummaryProps {
   subtotal: number;
   shipping: number;
-  tax: number;
   total: number;
 }
 
-export default function OrderSummary({ subtotal, shipping, tax, total }: OrderSummaryProps) {
+export default function OrderSummary({ subtotal, shipping, total }: OrderSummaryProps) {
   return (
     <View className="px-6 mt-6">
       <View className="bg-ui-surface/55 rounded-3xl p-5">
@@ -27,11 +26,6 @@ export default function OrderSummary({ subtotal, shipping, tax, total }: OrderSu
             <Text className="text-text-primary font-semibold text-base">
               ${shipping}
             </Text>
-          </View>
-
-          <View className="flex-row justify-between items-center">
-            <Text className="text-text-secondary text-base">IVA (19%)</Text>
-            <Text className="text-text-primary font-semibold text-base">${tax}</Text>
           </View>
 
           {/* Divider */}
