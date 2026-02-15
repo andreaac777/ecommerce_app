@@ -58,17 +58,19 @@ export const adminOnly = async (req, res, next) => {
 
         const isAdmin = userRole === 'admin';
         
-        const isAdminByEmail = ENV.ADMIN_EMAIL && 
+        const isAdminByEmail = ENV.NODE_ENV === 'development' &&
+                                ENV.ADMIN_EMAIL && 
                                 ENV.ADMIN_EMAIL.split(',')
                                     .map(e => e.trim())
                                     .includes(userEmail);
 
         if (!isAdmin && !isAdminByEmail) {
-            console.log(`Acceso denegado:`, {
-                email: userEmail,
-                role: userRole || 'sin rol'
-            });
-            
+            if (ENV.NODE_ENV === 'development') {
+                console.log(`Acceso denegado:`, {
+                    email: userEmail,
+                    role: userRole || 'sin rol'
+                });
+            }        
             return res.status(403).json({ 
                 message: "Forbidden - admin access only",
                 details: ENV.NODE_ENV === 'development' 
@@ -77,7 +79,9 @@ export const adminOnly = async (req, res, next) => {
             });
         }
 
-        console.log(`Admin autorizado: ${userEmail} (${isAdmin ? 'por rol' : 'por email'})`);
+        if (ENV.NODE_ENV === 'development') {
+            console.log(`Admin autorizado: ${userEmail} (${isAdmin ? 'por rol' : 'por email'})`);
+        }
         next();
     } catch (error) {
         console.error("Error in adminOnly middleware:", error);
@@ -100,7 +104,7 @@ export const requireRole = (allowedRoles) => {
 
             if (!allowedRoles.includes(userRole)) {
                 return res.status(403).json({ 
-                    message: `Forbidden - requires one of: ${allowedRoles.join(', ')}` 
+                    message: "Forbidden - insufficient permissions"
                 });
             }
 

@@ -20,18 +20,24 @@ function App() {
     }
     const isAdmin = user?.publicMetadata?.role === 'admin';
 
-    console.log('🔍 Auth check:', {
-        email: user?.primaryEmailAddress?.emailAddress,
-        role: user?.publicMetadata?.role,
-        isAdmin,
-        isSignedIn
-    });
+    if (import.meta.env.DEV) {
+        console.log('Auth check:', {
+            email: user?.primaryEmailAddress?.emailAddress,
+            role: user?.publicMetadata?.role,
+            isAdmin,
+            isSignedIn
+        });
+    }
 
     return (
         <Routes>
             <Route 
                 path="/login" 
-                element={isSignedIn ? <Navigate to="/dashboard" /> : <LoginPage />} 
+                element={
+                    isSignedIn 
+                        ? (isAdmin ? <Navigate to="/dashboard" /> : <Navigate to="/unauthorized" />) 
+                        : <LoginPage />
+                }
             />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route 

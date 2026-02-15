@@ -1,19 +1,15 @@
-import { useNavigate } from 'react-router';
 import { useClerk } from '@clerk/clerk-react';
 
 export default function UnauthorizedPage() {
-    const navigate = useNavigate();
     const { signOut } = useClerk();
 
     const handleSignOut = async () => {
-        await signOut();
-        navigate('/login');
+        await signOut({ redirectUrl: '/login' });
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black">
             <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-                {/* Icono */}
                 <div className="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
                     <svg
                         className="w-12 h-12 text-red-600"
@@ -29,18 +25,12 @@ export default function UnauthorizedPage() {
                         />
                     </svg>
                 </div>
-
-                {/* Título */}
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
                     Acceso Denegado
                 </h1>
-
-                {/* Mensaje */}
                 <p className="text-gray-600 mb-8">
                     Esta área es solo para personal autorizado.
                 </p>
-
-                {/* Botón */}
                 <button
                     onClick={handleSignOut}
                     className="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
