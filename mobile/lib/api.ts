@@ -67,7 +67,7 @@ export const useApi = () => {
               const payload = JSON.parse(atob(token.split('.')[1]));
               const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
               const status = skipCache ? "🔄 refrescado" : "📦 desde caché";
-              console.log(`✅ Token obtenido - expira en ${Math.floor(expiresIn/60)} minutos`);
+              console.log(`✅ Token ${status} - expira en ${Math.floor(expiresIn/60)} minutos`);
             } catch (e) {
               console.log("✅ Token obtenido");
             }
@@ -103,7 +103,7 @@ export const useApi = () => {
 
           try {
             originalRequest.headers['X-Retry-Request'] = 'true';              
-            return api(originalRequest);
+            return await api(originalRequest);
           } catch (refreshError) {
             console.error("❌ Error al refrescar token:", refreshError);
             return Promise.reject(refreshError);

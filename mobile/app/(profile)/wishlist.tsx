@@ -65,7 +65,7 @@ function WishlistScreen() {
                             // onPress={() => router.push(`/product/${item._id}`)}
                             >
                                 <View className="flex-row p-4">
-                                    <View className="flex-1"
+                                    <View
                                         style={{
                                             width: 100,
                                             height: 100,

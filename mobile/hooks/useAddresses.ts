@@ -34,7 +34,7 @@ export const useAddresses = () => {
       addressData,
     }: {
       addressId: string;
-      addressData: Partial<Address>;
+      addressData: Partial<Omit<Address, "_id">>;
     }) => {
       const { data } = await api.put<{ addresses: Address[] }>(
         `/users/addresses/${addressId}`,

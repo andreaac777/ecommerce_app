@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import "../global.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "@tanstack/react-query";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import * as Sentry from "@sentry/react-native";
@@ -17,6 +17,12 @@ Sentry.init({
 });
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => Sentry.captureException(error),
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => Sentry.captureException(error),
+  }),
   defaultOptions: {
     queries: {
       staleTime: 1000 * 30,

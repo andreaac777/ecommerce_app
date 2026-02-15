@@ -8,7 +8,7 @@ export const useOrders = () => {
     return useQuery<Order[]>({
         queryKey: ["orders"],
         queryFn: async () => {
-            const { data } = await api.get("/orders");
+            const { data } = await api.get<{ orders: Order[] }>("/orders");
             return data.orders || [];
         },
     });
