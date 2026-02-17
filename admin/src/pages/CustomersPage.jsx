@@ -52,15 +52,23 @@ function CustomersPage() {
 
                 <tbody>
                   {customers.map((customer) => (
-                    <tr key={customer._id}>
+                    <tr key={customer._id} className="hover align-middle">
                       <td className="flex items-center gap-3">
-                        <div className="avatar placeholder">
-                          <div className="bg-primary text-primary-content rounded-full w-12">
-                            <img
-                              src={customer.imageUrl}
-                              alt={customer.name}
-                              className="w-12 h-12 rounded-full"
-                            />
+                        <div className="avatar">
+                          <div className="rounded-full w-12">
+                            {customer.imageUrl ? (
+                              <img
+                                src={customer.imageUrl}
+                                alt={customer.name}
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <div className="bg-primary text-white flex items-center justify-center w-12 h-12 text-xl font-bold">
+                                {customer.name?.charAt(0).toUpperCase()}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="font-semibold">{customer.name}</div>

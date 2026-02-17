@@ -38,7 +38,7 @@ export async function createReview(req, res) {
 
         // atomic update or create
         const review = await Review.findOneAndUpdate(
-            { productId, userId: user._id },
+            { productId, userId: user._id, orderId },
             { rating, orderId, productId, userId: user._id },
             { new: true, upsert: true, runValidators: true }
         );

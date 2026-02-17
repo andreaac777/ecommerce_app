@@ -53,8 +53,7 @@ export const useApi = () => {
       async (config) => {
         try {
           const skipCache = config.headers['X-Retry-Request'] === 'true';
-          console.log("🔑 Obteniendo token para petición...");
-          
+         
           const token = await getToken({ 
             template: "mobile-app-token", 
             skipCache
@@ -66,38 +65,31 @@ export const useApi = () => {
             try {
               const payload = JSON.parse(atob(token.split('.')[1]));
               const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
-              const status = skipCache ? "🔄 refrescado" : "📦 desde caché";
-              console.log(`✅ Token ${status} - expira en ${Math.floor(expiresIn/60)} minutos`);
+              const status = skipCache ? "Generado" : "desde caché";
+              console.log(`Token ${status} - expira en ${Math.floor(expiresIn/60)} minutos`);
             } catch (e) {
-              console.log("✅ Token obtenido");
+              console.log("Error al decodificar token");
             }
-          } else if (isSignedIn) {
-            console.warn("⚠️ Usuario autenticado pero sin token disponible");
-          } else {
-            console.log("ℹ️ Usuario no autenticado");
           }
         } catch (error) {
-          console.error("❌ Error obteniendo token:", error);
+          console.error("Error obteniendo token:", error);
         }
 
         return config;
       },
       (error) => {
-        console.error("❌ Error en interceptor de petición:", error);
         return Promise.reject(error);
       }
     );
 
     responseInterceptorRef.current = api.interceptors.response.use(
       (response) => {
-        console.log(`✅ Petición exitosa: ${response.config.url}`);
         return response;
       },
       async (error) => {
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
-          console.log("🔄 Detectado error 401, intentando refrescar token...");
           
           originalRequest._retry = true;
 
@@ -105,12 +97,9 @@ export const useApi = () => {
             originalRequest.headers['X-Retry-Request'] = 'true';              
             return await api(originalRequest);
           } catch (refreshError) {
-            console.error("❌ Error al refrescar token:", refreshError);
             return Promise.reject(refreshError);
           }
         }
-
-        console.error("❌ Error en petición:", error.message);
         return Promise.reject(error);
       }
     );

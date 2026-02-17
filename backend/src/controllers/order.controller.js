@@ -47,7 +47,7 @@ export async function createOrder(req, res) {
 
 export async function getUserOrders(req, res) {
     try {
-        const orders = await Order.find({ clerkId: req.user.clerkId }).populate("orderItems.product").sort({ createdAt: -1 });
+        const orders = await Order.find({ clerkId: req.user.clerkId }).populate("orderItems.product", "name images price").sort({ createdAt: -1 });
 
         // check if each order has been reviewed
 
@@ -55,14 +55,23 @@ export async function getUserOrders(req, res) {
         const reviews = await Review.find({ orderId: { $in: orderIds } });
         const reviewedOrderIds = new Set(reviews.map((review) => review.orderId.toString()));
 
-        const ordersWithReviewStatus = await Promise.all(
-            orders.map(async (order) => {
-                return {
-                    ...order.toObject(),
-                    hasReviewed: reviewedOrderIds.has(order._id.toString()),
-                };
-            })
-        );
+        const ordersWithReviewStatus = orders.map((order) => {
+            const orderObj = order.toObject();
+            
+            const orderItemsWithNames = orderObj.orderItems.map(item => ({
+                _id: item._id,
+                product: item.product,
+                name: item.product?.name || '',
+                price: item.price,
+                quantity: item.quantity
+            }));
+
+            return {
+                ...orderObj,
+                orderItems: orderItemsWithNames,
+                hasReviewed: reviewedOrderIds.has(order._id.toString()),
+            };
+        });
 
         return res.status(200).json({ orders: ordersWithReviewStatus });
     } catch (error) {

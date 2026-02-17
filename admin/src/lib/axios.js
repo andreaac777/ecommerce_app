@@ -13,7 +13,6 @@ export const initializeAxiosAuth = (getToken) => {
 axiosInstance.interceptors.request.use(
     async (config) => {
         if (!getTokenFunction) {
-            console.warn("Axios no está inicializado con Clerk auth");
             return config;
         }
 
@@ -32,10 +31,10 @@ axiosInstance.interceptors.request.use(
                     try {
                         const payload = JSON.parse(atob(token.split('.')[1]));
                         const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
-                        const status = skipCache ? "recargado" : "cargado desde caché";
+                        const status = skipCache ? "Generado" : "Cargado desde caché";
                         console.log(`Token ${status} - expira en ${Math.floor(expiresIn / 60)}min`);
                     } catch (e) {
-                        console.log("Token obtenido");
+                        console.log("Error al decodificar token");
                     }
                 }
             }
@@ -64,7 +63,6 @@ axiosInstance.interceptors.response.use(
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-            console.log("Error 401 - recargando token...");
             originalRequest._retry = true;
 
             try {
@@ -73,7 +71,6 @@ axiosInstance.interceptors.response.use(
 
                 return await axiosInstance(originalRequest);
             } catch (refreshError) {
-                console.error("Error en retry:", refreshError);
                 return Promise.reject(refreshError);
             }
         }

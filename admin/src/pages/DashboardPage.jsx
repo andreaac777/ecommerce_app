@@ -108,7 +108,11 @@ function DashboardPage() {
 
                       <td>
                         <div className={`badge ${getOrderStatusBadge(order.status)}`}>
-                          {capitalizeText(order.status)}
+                          {{
+                            delivered: "Entregado",
+                            paid: "Pagado",
+                            pending: "Pendiente",
+                          }[order.status?.toLowerCase()] || "No Procesado"}
                         </div>
                       </td>
 

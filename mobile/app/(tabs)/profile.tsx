@@ -30,7 +30,7 @@ const ProfileScreen = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         {/* HEADER */}
-        <View className="px-6 pb-8">
+        <View className="px-6 pb-8 pt-6">
           <View className="bg-white rounded-3xl p-6 mt-5">
             <View className="flex-row items-center">
               <View className="relative">
@@ -54,7 +54,7 @@ const ProfileScreen = () => {
         </View>
 
         {/* MENU ITEMS */}
-        <View className="flex-row flex-wrap gap-2 mx-6 mb-3">
+        <View className="flex-row flex-wrap gap-2 mx-6 mb-3 mt-2">
           {MENU_ITEMS.map((item) => (
             <TouchableOpacity
               key={item.id}
@@ -74,22 +74,8 @@ const ProfileScreen = () => {
           ))}
         </View>
 
-        {/* NOTIFICATIONS BTN */}
-        <View className="mb-3 mx-6 mt-5 bg-white rounded-2xl p-4">
-          <TouchableOpacity
-            className="flex-row items-center justify-between py-2"
-            activeOpacity={0.7}
-          >
-            <View className="flex-row items-center">
-              <Ionicons name="notifications-outline" size={22} color="#333333" />
-              <Text className="text-text-primary font-semibold ml-3">Notificaciones</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#333333" />
-          </TouchableOpacity>
-        </View>
-
         {/* PRIVACY AND SECURTIY LINK */}
-        <View className="mb-3 mx-6 bg-white rounded-2xl p-4">
+        <View className="mb-3 mx-6 mt-6 bg-white rounded-2xl p-4">
           <TouchableOpacity
             className="flex-row items-center justify-between py-2"
             activeOpacity={0.7}
@@ -105,7 +91,7 @@ const ProfileScreen = () => {
 
         {/* SIGNOUT BTN */}
         <TouchableOpacity
-          className="mx-6 mb-3 bg-brand-primary rounded-2xl py-5 flex-row items-center justify-center border-2 border-red-500/20"
+          className="mx-6 mb-3 mt-2 bg-brand-primary rounded-2xl py-5 flex-row items-center justify-center border-2 border-red-500/20"
           activeOpacity={0.8}
           onPress={() => signOut()}
         >
