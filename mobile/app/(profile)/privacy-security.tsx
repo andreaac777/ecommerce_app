@@ -15,18 +15,10 @@ type SecurityOption = {
 
 function PrivacyAndSecurityScreen() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [marketingEmails, setMarketingEmails] = useState(false);
 
   const securitySettings: SecurityOption[] = [
-    {
-      id: "password",
-      icon: "lock-closed-outline",
-      title: "Cambiar Contraseña",
-      description: "Actualizar contraseña",
-      type: "navigation",
-    },
     {
       id: "two-factor",
       icon: "shield-checkmark-outline",
@@ -38,14 +30,6 @@ function PrivacyAndSecurityScreen() {
   ];
 
   const privacySettings: SecurityOption[] = [
-    {
-      id: "push",
-      icon: "notifications-outline",
-      title: "Notificaciones en el Dispositivo",
-      description: "Activar notificaciones en el dispositivo",
-      type: "toggle",
-      value: pushNotifications,
-    },
     {
       id: "email",
       icon: "mail-outline",
@@ -83,9 +67,6 @@ function PrivacyAndSecurityScreen() {
     switch (id) {
       case "two-factor":
         setTwoFactorEnabled(value);
-        break;
-      case "push":
-        setPushNotifications(value);
         break;
       case "email":
         setEmailNotifications(value);
