@@ -16,6 +16,7 @@ import reviewRoutes from "./routes/review.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import paymentRoutes from "./routes/payment.routes.js"
+import couponRoutes from "./routes/coupon.routes.js";
 
 
 const app = express();
@@ -104,6 +105,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/coupons", couponRoutes);
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({ message: "Success" });

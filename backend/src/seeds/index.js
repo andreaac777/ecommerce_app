@@ -24,7 +24,7 @@ const products = [
     stock: 35,
     category: "Palitos Premium",
     images: [
-      "https://res.cloudinary.com/diqoi03kk/image/upload/v1760341695/guayaba_premium_s1qwz9.png"
+      "https://res.cloudinary.com/diqoi03kk/image/upload/v1769383615/products/oskq5rdg0sziwtkyusla.png"
     ],
     averageRating: 4.7,
     totalReviews: 256,
@@ -102,7 +102,7 @@ const products = [
     stock: 75,
     category: "Especiales",
     images: [
-      "https://res.cloudinary.com/diqoi03kk/image/upload/v1760381094/bunuelo_gyv7yt.png"
+      "https://res.cloudinary.com/diqoi03kk/image/upload/v1769925024/products/urtcva5pufpktzxbpiqm.png"
     ],
     averageRating: 4.5,
     totalReviews: 203,

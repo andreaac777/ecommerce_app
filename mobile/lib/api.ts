@@ -66,7 +66,6 @@ export const useApi = () => {
               const payload = JSON.parse(atob(token.split('.')[1]));
               const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
               const status = skipCache ? "Generado" : "desde caché";
-              console.log(`Token ${status} - expira en ${Math.floor(expiresIn/60)} minutos`);
             } catch (e) {
               console.log("Error al decodificar token");
             }
