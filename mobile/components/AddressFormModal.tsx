@@ -1,17 +1,8 @@
 import { View, Text, Modal, TouchableOpacity, ScrollView, TextInput, Switch, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import SafeScreen from "./SafeScreen";
 import { Ionicons } from "@expo/vector-icons";
-import { MUNICIPALITIES, validateAddressForm, isValidName, sanitizePhone } from "../lib/addressValidationHelper";
 import { useState } from "react";
-
-interface AddressFormData {
-  label: string;
-  fullName: string;
-  streetAddress: string;
-  city: string;
-  phoneNumber: string;
-  isDefault: boolean;
-}
+import { AddressFormData, MUNICIPALITIES, validateAddressForm, isValidName, sanitizePhone } from "../lib/addressValidationHelper";
 
 interface AddressFormModalProps {
   visible: boolean;
@@ -43,7 +34,8 @@ const AddressFormModal = ({
     }
   };
 
-  const handlePhoneChange = (text: string) => {    const cleaned = sanitizePhone(text);
+  const handlePhoneChange = (text: string) => {
+    const cleaned = sanitizePhone(text);
     onFormChange({ ...addressForm, phoneNumber: cleaned });
   };
 
@@ -145,7 +137,7 @@ const AddressFormModal = ({
                       <TouchableOpacity
                         key={city}
                         className={`px-4 py-4 ${
-                          index < MUNICIPALITIES.length - 1 ? "" : ""
+                          index < MUNICIPALITIES.length - 1
                         } ${addressForm.city === city ? "bg-brand-primary/10" : ""}`}
                         onPress={() => {
                           onFormChange({ ...addressForm, city });
@@ -194,7 +186,7 @@ const AddressFormModal = ({
               <TouchableOpacity
                 className="bg-brand-primary rounded-2xl py-5 items-center"
                 activeOpacity={0.8}
-                onPress={onSave}
+                onPress={handleSave}
                 disabled={isAddingAddress || isUpdatingAddress}
               >
                 <Text className="text-white font-bold text-lg">

@@ -33,7 +33,10 @@ export const validateCoupon = async (req, res) => {
 
         let discountAmount = 0;
         if (coupon.discountType === "percentage") {
-            discountAmount = Math.round((subtotal * coupon.discountValue) / 100);
+            discountAmount = Math.min(
+                Math.round((subtotal * coupon.discountValue) / 100),
+                subtotal
+            );
         } else {
             discountAmount = Math.min(coupon.discountValue, subtotal);
         }
@@ -104,6 +107,18 @@ export const updateCoupon = async (req, res) => {
 
         if (updates.code) {
             updates.code = updates.code.toUpperCase().trim();
+        }
+
+        const discountType = updates.discountType;
+        const discountValue = updates.discountValue;
+        if (discountValue !== undefined) {
+            const existingCoupon = discountType === undefined
+                ? await Coupon.findById(id).select("discountType").lean()
+                : null;
+            const effectiveType = discountType ?? existingCoupon?.discountType;
+            if (effectiveType === "percentage" && (discountValue < 1 || discountValue > 100)) {
+                return res.status(400).json({ error: "El porcentaje debe estar entre 1 y 100." });
+            }
         }
 
         const coupon = await Coupon.findByIdAndUpdate(id, updates, {
