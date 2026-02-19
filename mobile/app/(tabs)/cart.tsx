@@ -243,7 +243,7 @@ const CartScreen = () => {
     if (appliedCoupon.discountType === "percentage") {
       return `${appliedCoupon.code} (-${appliedCoupon.discountValue}%)`;
     }
-    return `${appliedCoupon.code} (-$${appliedCoupon.discountValue} COP)`;
+    return `${appliedCoupon.code} (-$${discount} COP)`;
   };
 
   if (isLoading && cartItems.length === 0) {
