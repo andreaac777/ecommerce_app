@@ -7,6 +7,7 @@ import {
     PanelLeftIcon,
     ShoppingBagIcon,
     UsersIcon,
+    TagIcon
 } from "lucide-react";
 
 export const NAVIGATION = [
@@ -14,6 +15,7 @@ export const NAVIGATION = [
     { name: "Productos", path: "/products", icon: <ShoppingBagIcon className="size-5" /> },
     { name: "Pedidos", path: "/orders", icon: <ClipboardListIcon className="size-5" /> },
     { name: "Clientes", path: "/customers", icon: <UsersIcon className="size-5" /> },
+    { name: "Cupones", path: "/coupons", icon: <TagIcon className="size-5" /> },
 ];
 
 function Navbar() {
