@@ -47,3 +47,26 @@ export const customerApi = {
         return data;
     },
 };
+
+export const couponApi = {
+    getAll: async () => {
+        const { data } = await axiosInstance.get("/coupons");
+        return data;
+    },
+
+    create: async (couponData) => {
+        const { data } = await axiosInstance.post("/coupons", couponData);
+        return data;
+    },
+
+    update: async ({ id, ...couponData }) => {
+        const { data } = await axiosInstance.patch(`/coupons/${id}`, couponData);
+        return data;
+    },
+
+    delete: async (id) => {
+        const { data } = await axiosInstance.delete(`/coupons/${id}`);
+        return data;
+    },
+};
+

@@ -3,25 +3,22 @@ import { ENV } from "../config/env.js";
 import { User } from "../models/user.model.js";
 import { Product } from "../models/product.model.js";
 import { Order } from "../models/order.model.js";
+import { Coupon } from "../models/coupon.model.js";
 
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY);
 
 export async function createPaymentIntent(req, res) {
     try {
-        const { cartItems, shippingAddress } = req.body;
+        const { cartItems, shippingAddress, couponCode } = req.body;
         const user = req.user;
 
-        // Validate cart items
         if (!cartItems || cartItems.length === 0) {
             return res.status(400).json({ error: "Cart is empty" });
         }
-
-        // Validate shipping address
         if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.streetAddress) {
             return res.status(400).json({ error: "Shipping address is required" });
         }
 
-        // Calculate total from server-side (don't trust client - ever.)
         let subtotal = 0;
         const validatedItems = [];
 
@@ -36,7 +33,7 @@ export async function createPaymentIntent(req, res) {
             }
 
             subtotal += product.price * item.quantity;
-            
+
             validatedItems.push({
                 product: product._id.toString(),
                 price: product.price,
@@ -44,25 +41,54 @@ export async function createPaymentIntent(req, res) {
             });
         }
 
+        let discount = 0;
+        let appliedCoupon = null;
+
+        if (couponCode) {
+            const coupon = await Coupon.findOne({ code: couponCode.toUpperCase().trim() });
+
+            const isValid =
+                coupon &&
+                coupon.isActive &&
+                (!coupon.expiresAt || new Date() < coupon.expiresAt);
+
+            if (!isValid) {
+                return res.status(400).json({ error: "El cupón no es válido o ha expirado." });
+            }
+
+            const alreadyUsed = coupon.usedBy.some(
+                (id) => id.toString() === user._id.toString()
+            );
+            if (alreadyUsed) {
+                return res.status(400).json({ error: "Ya usaste este cupón anteriormente." });
+            }
+            
+            if (coupon.discountType === "percentage") {
+                discount = Math.round((subtotal * coupon.discountValue) / 100);
+            } else {
+                discount = Math.min(coupon.discountValue, subtotal);
+            }
+
+            appliedCoupon = coupon;
+        }
+
         const shipping = 10000;
-        const tax = Math.round(subtotal * 0.19);  
-        const total = subtotal + shipping + tax;
+        const total = subtotal + shipping - discount;
 
         if (total <= 0) {
             return res.status(400).json({ error: "Invalid order total" });
         }
-        
+
         const stripeAmount = Math.round(total * 100);
 
         const minAmountCOP = 2000;
         if (total < minAmountCOP) {
             console.error("Error: Amount is less than the minimum for Stripe");
-            return res.status(400).json({ 
-                error: `The minimum amount to process payments is $${minAmountCOP} COP` 
+            return res.status(400).json({
+                error: `The minimum amount to process payments is $${minAmountCOP} COP`
             });
         }
 
-        // find or create the stripe customer
         let customer;
         if (user.stripeCustomerId) {
             try {
@@ -85,7 +111,6 @@ export async function createPaymentIntent(req, res) {
             await User.findByIdAndUpdate(user._id, { stripeCustomerId: customer.id });
         }
 
-        // create payment intent
         const paymentIntent = await stripe.paymentIntents.create({
             amount: stripeAmount,
             currency: "cop",
@@ -98,17 +123,18 @@ export async function createPaymentIntent(req, res) {
                 userId: user._id.toString(),
                 orderItems: JSON.stringify(validatedItems),
                 shippingAddress: JSON.stringify(shippingAddress),
+                couponCode: appliedCoupon ? appliedCoupon.code : "",
                 totalPrice: total.toString(),
             },
         });
 
-        res.status(200).json({ 
+        res.status(200).json({
             clientSecret: paymentIntent.client_secret,
-            paymentIntentId: paymentIntent.id 
+            paymentIntentId: paymentIntent.id
         });
     } catch (error) {
         console.error("Error creating payment intent:", error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: "Failed to create payment intent",
             details: ENV.NODE_ENV === "development" ? error.message : undefined
         });
@@ -130,7 +156,7 @@ export async function handleWebhook(req, res) {
         const paymentIntent = event.data.object;
 
         try {
-            const { userId, clerkId, orderItems, shippingAddress, totalPrice } = paymentIntent.metadata;
+            const { userId, clerkId, orderItems, shippingAddress, couponCode, totalPrice } = paymentIntent.metadata;
 
             const existingOrder = await Order.findOne({ "paymentResult.id": paymentIntent.id });
 
@@ -139,29 +165,51 @@ export async function handleWebhook(req, res) {
                 return res.json({ received: true });
             }
 
-            // create order
+            const items = JSON.parse(orderItems);
+            const parsedShippingAddress = JSON.parse(shippingAddress);
+
+            const enrichedOrderItems = [];
+
+            for (const item of items) {
+                const product = await Product.findById(item.product);
+
+                enrichedOrderItems.push({
+                    product: product?._id ?? item.product,
+                    name: product?.name ?? "Producto no disponible",
+                    price: item.price,
+                    quantity: item.quantity,
+                });
+            }
+
             const order = await Order.create({
                 user: userId,
                 clerkId,
-                orderItems: JSON.parse(orderItems),
-                shippingAddress: JSON.parse(shippingAddress),
+                orderItems: enrichedOrderItems,
+                shippingAddress: parsedShippingAddress,
                 paymentResult: {
-                id: paymentIntent.id,
-                status: "succeeded",
+                    id: paymentIntent.id,
+                    status: "succeeded",
                 },
                 totalPrice,
             });
-
-            const items = JSON.parse(orderItems);
 
             for (const item of items) {
                 await Product.findByIdAndUpdate(item.product, {
                     $inc: { stock: -item.quantity },
                 });
             }
+
+            if (couponCode) {
+                await Coupon.findOneAndUpdate(
+                    { code: couponCode },
+                    { $addToSet: { usedBy: userId } } 
+                );
+            }
+
             console.log("Order created successfully:", order._id);
         } catch (error) {
             console.error("Error processing webhook:", error);
+            return res.status(500).json({ error: "Webhook processing failed" });
         }
     }
 

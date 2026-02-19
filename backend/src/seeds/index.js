@@ -24,7 +24,7 @@ const products = [
     stock: 35,
     category: "Palitos Premium",
     images: [
-      "https://res.cloudinary.com/diqoi03kk/image/upload/v1760341695/guayaba_premium_s1qwz9.png"
+      "https://res.cloudinary.com/diqoi03kk/image/upload/v1769383615/products/oskq5rdg0sziwtkyusla.png"
     ],
     averageRating: 4.7,
     totalReviews: 256,
@@ -102,7 +102,7 @@ const products = [
     stock: 75,
     category: "Especiales",
     images: [
-      "https://res.cloudinary.com/diqoi03kk/image/upload/v1760381094/bunuelo_gyv7yt.png"
+      "https://res.cloudinary.com/diqoi03kk/image/upload/v1769925024/products/urtcva5pufpktzxbpiqm.png"
     ],
     averageRating: 4.5,
     totalReviews: 203,
@@ -202,33 +202,34 @@ const products = [
 
 const seedDatabase = async () => {
   try {
-    // Connect to MongoDB
     await mongoose.connect(ENV.DB_URL);
-    console.log("✅ Connected to MongoDB");
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      await Product.deleteMany({}, { session });
+      console.log("Cleared existing products");
+      await Product.insertMany(products, { session });
+      console.log(`Successfully seeded ${products.length} products`);
+      await session.commitTransaction();
+    } catch (txErr) {
+      await session.abortTransaction();
+      throw txErr;
+    } finally {
+      session.endSession();
+    }
 
-    // Clear existing products
-    await Product.deleteMany({});
-    console.log("🗑️  Cleared existing products");
-
-    // Insert seed products
-    await Product.insertMany(products);
-    console.log(`✅ Successfully seeded ${products.length} products`);
-
-    // Display summary
     const categories = [...new Set(products.map((p) => p.category))];
-    console.log("\n📊 Seeded Products Summary:");
+    console.log("\n Seeded Products Summary:");
     console.log(`Total Products: ${products.length}`);
     console.log(`Categories: ${categories.join(", ")}`);
 
-    // Close connection
     await mongoose.connection.close();
-    console.log("\n✅ Database seeding completed and connection closed");
+    console.log("\n Database seeding completed and connection closed");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Error seeding database:", error);
+    console.error(" Error seeding database:", error);
     process.exit(1);
   }
 };
 
-// Run the seed function
 seedDatabase();
