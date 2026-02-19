@@ -20,6 +20,11 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1,
+      validate: {
+        validator: function (v) {
+          return true;
+        },
+      },
     },
 
     expiresAt: {
