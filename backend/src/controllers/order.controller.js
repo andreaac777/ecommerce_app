@@ -1,6 +1,7 @@
 import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
 import { Review } from "../models/review.model.js";
+import { sendOrderCreatedAdminEmail, sendOrderCreatedClientEmail } from "../services/email.service.js";
 
 export async function createOrder(req, res) {
     try {
@@ -28,12 +29,46 @@ export async function createOrder(req, res) {
             shippingAddress,
             paymentResult,
             totalPrice,
+            discount: discount || 0,
         });
 
         for (const item of orderItems) {
             await Product.findByIdAndUpdate(item.product._id, {
                 $inc: { stock: -item.quantity },
             });
+        }
+
+        try {
+            const emailData = {
+                orderId: order._id.toString(),
+                userName: user.name,
+                userEmail: user.email,
+                total: totalPrice,
+                discount: discount || 0,
+                items: orderItems.map((item) => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+                shippingAddress,
+                emailNotifications: user.emailNotifications,
+            };
+
+            Promise.allSettled([
+                sendOrderCreatedAdminEmail(emailData),
+                sendOrderCreatedClientEmail(emailData),
+            ]).then((results) => {
+                results.forEach((result, index) => {
+                    if (result.status === "fulfilled") {
+                        const emailType = index === 0 ? "Admin" : "Cliente";
+                        console.log(`Email de nuevo pedido enviado a ${emailType}`);
+                    } else {
+                        console.error("Error enviando email de nuevo pedido:", result.reason);
+                    }
+                });
+            });
+        } catch (emailError) {
+            console.error("Error en proceso de emails:", emailError.message);
         }
 
         return res.status(201).json({ message: "Order created successfully", order });
