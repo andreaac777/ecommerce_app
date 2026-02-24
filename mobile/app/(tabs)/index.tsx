@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, ScrollView, View, TouchableOpacity, TextInput, Image, Button } from 'react-native'
+import { Text, ScrollView, View, TouchableOpacity, TextInput, Image, Linking } from 'react-native'
 import SafeScreen from '@/components/SafeScreen'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useState } from 'react'
@@ -7,6 +7,8 @@ import { useMemo } from 'react'
 import useProducts from '@/hooks/useProducts'
 import ProductsGrid from '@/components/ProductsGrid'
 
+const WHATSAPP_NUMBER = "+573207194098";
+const WHATSAPP_MESSAGE = "Hola, me gustaría obtener más información sobre sus productos.";
 
 const CATEGORIES = [
   { name: "All", icon: "grid" as const },
@@ -28,12 +30,10 @@ const ShopScreen = () => {
 
     let filtered = products;
 
-    // filtering by category
     if (selectedCategory !== "All") {
       filtered = filtered.filter((product) => product.category === selectedCategory);
     }
 
-    // filtering by searh query
     if (searchQuery.trim()) {
       filtered = filtered.filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -43,6 +43,15 @@ const ShopScreen = () => {
     return filtered;
   }, [products, selectedCategory, searchQuery]);
   
+  const handleWhatsApp = () => {
+    const url = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+    const webUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+
+    Linking.canOpenURL(url)
+      .then((supported) => Linking.openURL(supported ? url : webUrl))
+      .catch(() => Linking.openURL(webUrl));
+  };
+  
   return (
     <SafeScreen>
       <ScrollView
@@ -50,7 +59,6 @@ const ShopScreen = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        
         {/* HEADER */}
         <View className="px-6 pb-4">
           <View className="items-center">
@@ -133,6 +141,29 @@ const ShopScreen = () => {
           {/* PRODUCTS GRID */}
           <ProductsGrid products={filteredProducts} isLoading={isLoading} isError={isError}/>
         </View>
+
+        <TouchableOpacity
+          onPress={handleWhatsApp}
+          activeOpacity={0.8}
+          style={{
+            position: "absolute",
+            bottom: 24,
+            right: 24,
+            backgroundColor: "#25D366",
+            borderRadius: 999,
+            width: 56,
+            height: 56,
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#000",
+            shadowOpacity: 0.2,
+            shadowOffset: { width: 0, height: 4 },
+            shadowRadius: 8,
+            elevation: 6,
+          }}
+      >
+        <Ionicons name="logo-whatsapp" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
 
       </ScrollView>
       
