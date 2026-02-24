@@ -18,7 +18,7 @@ import SafeScreen from "@/components/SafeScreen";
 import { userApi } from "@/lib/api";
 
 
-export type DocumentType = "cedula_ciudadania" | "cedula_extranjeria" | "pasaporte" | null;
+export type DocumentType = "cedula_ciudadania" | "cedula_extranjeria" | null;
 export type Gender = "masculino" | "femenino" | "otro" | null;
 
 export interface ProfileData {
@@ -89,7 +89,13 @@ function validateForm(form: { documentType: DocumentType; documentNumber: string
       const today = new Date();
       const minDate = new Date();
       minDate.setFullYear(today.getFullYear() - 120);
-      if (isNaN(parsed.getTime())) errors.push("Fecha de nacimiento inválida.");
+      const [y, m, d] = iso.split("-").map(Number);
+      if (
+        isNaN(parsed.getTime()) ||
+        parsed.getUTCFullYear() !== y ||
+        parsed.getUTCMonth() + 1 !== m ||
+        parsed.getUTCDate() !== d
+      ) errors.push("Fecha de nacimiento inválida.");
       else if (parsed > today) errors.push("La fecha de nacimiento no puede ser posterior a la fecha actual.");
       else if (parsed < minDate) errors.push("Fecha de nacimiento incorrecta.");
     }
@@ -328,9 +334,7 @@ const EditProfileModal = ({ visible, onClose, currentData }: EditProfileModalPro
               {isSaving ? (
                 <ActivityIndicator size="small" color="#5B3A29" />
               ) : (
-                <>
-                  <Text className="text-white font-bold text-lg mr-2">Guardar Cambios</Text>
-                </>
+                <Text className="text-white font-bold text-lg mr-2">Guardar Cambios</Text>
               )}
             </View>
           </TouchableOpacity>

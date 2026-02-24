@@ -125,7 +125,7 @@ export const userApi = {
   },
 
   updateProfile: async (profileData: {
-    documentType?: "cedula_ciudadania" | "cedula_extranjeria" | "pasaporte" | null;
+    documentType?: "cedula_ciudadania" | "cedula_extranjeria" | null;
     documentNumber?: string;
     gender?: "masculino" | "femenino" | "otro" | null;
     dateOfBirth?: string | null; // "YYYY-MM-DD"

@@ -243,7 +243,7 @@ export async function updateProfile(req, res) {
 
         const updateFields = {};
         if (documentType !== undefined) updateFields.documentType = documentType;
-        if (documentNumber !== undefined) updateFields.documentNumber = documentNumber.trim();
+        if (documentNumber !== undefined) updateFields.documentNumber = documentNumber != null ? documentNumber.trim() : "";
         if (gender !== undefined) updateFields.gender = gender;
         if (dateOfBirth !== undefined) updateFields.dateOfBirth = dateOfBirth ? new Date(dateOfBirth) : null;
 
