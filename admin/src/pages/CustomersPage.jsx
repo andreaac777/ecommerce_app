@@ -1,14 +1,28 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { customerApi } from "../lib/api";
 import { formatDate } from "../lib/utils";
 
 function CustomersPage() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["customers"],
     queryFn: customerApi.getAll,
   });
 
+  const { mutate: updateStatus, isPending } = useMutation({
+    mutationFn: customerApi.updateStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+    },
+  });
+
   const customers = data?.customers || [];
+
+  const handleStatusChange = (customerId, currentIsActive, newValue) => {
+    const isActive = newValue === "true";
+    if (isActive === currentIsActive) return;
+    updateStatus({ customerId, isActive });
+  };
 
   return (
     <div className="space-y-6">
@@ -47,6 +61,7 @@ function CustomersPage() {
                     <th>Direcciones</th>
                     <th>Lista de Deseos</th>
                     <th>Fecha de Registro</th>
+                    <th>Estado</th>
                   </tr>
                 </thead>
 
@@ -91,6 +106,21 @@ function CustomersPage() {
                       <td>
                         <span className="text-sm opacity-60">{formatDate(customer.createdAt)}</span>
                       </td>
+
+                      <td>
+                        <select
+                          className="select select-sm w-36"
+                          value={String(customer.isActive !== false)}
+                          onChange={(e) =>
+                            handleStatusChange(customer._id, customer.isActive !== false, e.target.value)
+                          }
+                          disabled={isPending}
+                        >
+                          <option value="true">Activo</option>
+                          <option value="false">Inactivo</option>
+                        </select>
+                      </td>
+
                     </tr>
                   ))}
                 </tbody>
