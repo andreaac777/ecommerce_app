@@ -32,7 +32,7 @@ function InfoRow({
   value: string | null | undefined;
 }) {
   return (
-    <View className="flex-row items-center py-4 border-b border-ui-surface/60 last:border-b-0">
+    <View className="flex-row items-center py-4 border-ui-surface/60 last:border-b-0">
       <View className="bg-brand-primary/10 rounded-full w-9 h-9 items-center justify-center mr-4">
         <Ionicons name={icon as any} size={18} color="#5B3A29" />
       </View>

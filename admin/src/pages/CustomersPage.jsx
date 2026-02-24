@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { customerApi } from "../lib/api";
 import { formatDate } from "../lib/utils";
@@ -41,7 +41,7 @@ function calcAge(iso) {
 
 function CustomersPage() {
   const queryClient = useQueryClient();
-  const [expandedId, setExpandedId] = useState(null);
+  const [setExpandedId] = useState(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["customers"],
@@ -116,10 +116,9 @@ function CustomersPage() {
 
                 <tbody>
                   {customers.map((customer) => (
-                    <>
+                    <Fragment key={customer._id}>
                       {/* MAIN ROW */}
                       <tr
-                        key={customer._id}
                         className="hover align-middle cursor-pointer"
                         onClick={() => toggleExpand(customer._id)}
                       >
@@ -150,7 +149,7 @@ function CustomersPage() {
                           {customer.documentType ? (
                             <div className="flex flex-col gap-0.5">
                               <span className="text-xs text-base-content/60">
-                                {DOCUMENT_LABELS[customer.documentType] ?? customer.documentType}
+                                {DOCUMENT_LABELS[customer.documentType] ?? customer.documentType}{" "}
                                 {customer.documentNumber || "—"}
                               </span>
                             </div>
@@ -214,6 +213,7 @@ function CustomersPage() {
                             onChange={(e) =>
                               handleStatusChange(customer._id, customer.isActive !== false, e.target.value)
                             }
+                            onClick={(e) => e.stopPropagation()}
                             disabled={isPending}
                           >
                             <option value="true">Activo</option>
@@ -221,7 +221,7 @@ function CustomersPage() {
                           </select>
                         </td>
                       </tr>
-                    </>
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
