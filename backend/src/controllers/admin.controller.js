@@ -140,6 +140,13 @@ export async function updateOrderStatus (req, res) {
                 const user = order.user;
 
                 if (user) {
+                    
+                    const orderItems = order.orderItems.map((item) => ({
+                        name:     item.name || item.product?.name || "Producto",
+                        quantity: item.quantity,
+                        price:    item.price,
+                    }));
+
                     const emailData = {
                         orderId: order._id.toString(),
                         status,
@@ -147,11 +154,7 @@ export async function updateOrderStatus (req, res) {
                         userName: user.name,
                         total: order.totalPrice,
                         discount: order.discount || 0, 
-                        items: order.orderItems.map(item => ({
-                            name: item.name || item.product?.name || 'Producto',
-                            quantity: item.quantity,
-                            price: item.price,
-                        })),
+                        items: orderItems,
                         shippingAddress: order.shippingAddress,
                         emailNotifications: user.emailNotifications,    
                     };
@@ -162,13 +165,69 @@ export async function updateOrderStatus (req, res) {
                     ]).then(results => {
                         results.forEach((result, index) => {
                             if (result.status === 'fulfilled') {
-                                const emailType = index === 0 ? 'Admin' : 'Cliente';
-                                console.log(`Email enviado a ${emailType}`);
+                                console.log(`Email de estado enviado a ${index === 0 ? "Admin" : "Cliente"}`);
                             } else if (result.status === 'rejected') {
                                 console.error('Error enviando email:', result.reason);
                             }
                         });
                     }).catch(err => console.error('Unexpected email handling error:', err));
+
+                    if (status === "paid") {
+                        (async () => {
+                            try {
+                                const invoiceData = {
+                                    orderId:  order._id.toString(),
+                                    date:     order.paidAt || new Date(),
+                                    items:    orderItems,
+                                    shipping: 10000,
+                                    discount: order.discount || 0,
+                                    customer: {
+                                        name:           user.name,
+                                        documentType:   user.documentType  || null,
+                                        documentNumber: user.documentNumber || "—",
+                                        email:          user.email,
+                                        phone:          user.addresses?.[0]?.phoneNumber || "—",
+                                        address:        order.shippingAddress?.streetAddress || "—",
+                                        city:           order.shippingAddress?.city          || "—",
+                                    },
+                                };
+
+                                const year         = invoiceData.date.getFullYear();
+                                const suffix       = invoiceData.orderId.slice(-8).toUpperCase();
+                                const invoiceNumber = `FV-${year}-${suffix}`;
+
+                                const [pdfBuffer, csvContent] = await Promise.all([
+                                    generateInvoicePDF(invoiceData),
+                                    generateInvoiceCSV(invoiceData),
+                                ]);
+
+                                await Promise.allSettled([
+                                    sendInvoiceClientEmail({
+                                        userName:      user.name,
+                                        userEmail:     user.email,
+                                        orderId:       order._id.toString(),
+                                        pdfBuffer,
+                                        invoiceNumber,
+                                    }),
+                                    sendInvoiceAdminEmail({
+                                        orderId:       order._id.toString(),
+                                        invoiceNumber,
+                                        csvContent,
+                                    }),
+                                ]).then((results) => {
+                                    results.forEach((result, index) => {
+                                        if (result.status === "fulfilled") {
+                                            console.log(`Factura enviada a ${index === 0 ? "Cliente" : "Admin"} (${invoiceNumber})`);
+                                        } else {
+                                            console.error("Error enviando factura:", result.reason);
+                                        }
+                                    });
+                                });
+                            } catch (invoiceError) {
+                                console.error("Error generando/enviando factura:", invoiceError.message);
+                            }
+                        })();
+                    }
                 }
             } catch (emailError) {
                 console.error('Error en proceso de emails:', emailError.message);
@@ -234,10 +293,8 @@ export const deleteProduct = async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Delete images from Cloudinary
         if (product.images && product.images.length > 0) {
             const deletePromises = product.images.map((imageUrl) => {
-                // Extract public_id from URL (assumes format: .../products/publicId.ext)
                 const publicId = "products/" + imageUrl.split("/products/")[1]?.split(".")[0];
                 if (publicId) return cloudinary.uploader.destroy(publicId);
             });
