@@ -217,3 +217,14 @@ export const IMAGE_SIZES = {
 
 // IVA Colombia
 export const IVA_RATE = 0.19; // 19%
+
+// Categorías reales de productos (alineadas con mobile y MongoDB)
+// El Catalog.jsx las deriva dinámicamente de los productos, pero se documentan aquí
+// como referencia del enum exacto que usa el backend.
+export const PRODUCT_CATEGORIES = [
+  'Palitos Premium',
+  'Cocteleros',
+  'Dulces',
+  'Especiales',
+  'Nuevos',
+];

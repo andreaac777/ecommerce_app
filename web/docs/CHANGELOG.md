@@ -5,6 +5,76 @@ Formato: **fecha · archivo(s) · tipo · descripción**
 
 ---
 
+## [24-02-2026] — Sesión 7
+
+### 🐛 Fixes UX + ✨ Botones de favoritos
+
+#### Favoritos implementados
+| Archivo | Cambio |
+|---|---|
+| `components/products/ProductCard.jsx` | Botón de corazón absoluto (esquina superior derecha) con `useWishlist` + `useAuth`. Relleno `#C34928` si está en favoritos, outline `#5B3A29` si no. Requiere login → `toast.info` |
+| `pages/ProductDetail.jsx` | Botón secundario "Agregar a favoritos" / "Guardado en favoritos" debajo del botón de carrito, con el mismo patrón de autenticación |
+
+#### Bugs corregidos
+| Archivo | Problema | Solución |
+|---|---|---|
+| `pages/profile/Wishlist.jsx` | Toast duplicado al agregar al carrito desde favoritos | Eliminado `toast.success` explícito de `handleAddToCart` (CartContext ya lo dispara) |
+| `pages/profile/Wishlist.jsx` | Imagen de productos recortada (`object-cover`) | Cambiado contenedor a `h-40 bg-white` + `object-contain` en la imagen |
+| `pages/profile/Wishlist.jsx` | Bordes de cards distintos al catálogo | Reemplazadas clases custom por `card-product` para coherencia visual |
+| `components/layout/Navbar.jsx` | Menú hamburguesa no se podía volver a abrir tras scroll (el tap generaba un micro-scroll que disparaba el listener inmediatamente) | `useEffect` con `setTimeout` de 150ms antes de registrar el listener de scroll |
+| `App.jsx` | Links del footer abrían la página pero no hacían scroll-to-top | `<ScrollToTop />` no estaba montado en App.jsx — añadido dentro de `<Router>` |
+
+#### Texto actualizado
+| Archivo | Cambio |
+|---|---|
+| `pages/Home.jsx` | Hero: "Empanadas crujientes..." → "Palitos crujientes, buñuelos esponjosos y tradición colombiana en cada bocado. Calidad desde 2005." |
+
+---
+
+### 🔗 Alineación con backend + mobile (ecommerce_app actualizado)
+
+#### FASE A — Rutas de productos públicas
+| Archivo | Cambio |
+|---|---|
+| `ecommerce_app/backend/src/routes/product.routes.js` | Eliminado `protectRoute` de `GET /` y `GET /:id` — productos accesibles sin token (acordado con Andrea) |
+| `docs/cambio-backend-productos-publicos.md` | Documentación del cambio para Andrea: impacto, razón, cómo revertir |
+
+#### FASE B — Manejo de cuenta inactiva
+| Archivo | Cambio |
+|---|---|
+| `services/api.js` | Interceptor 403 detecta `{ code: "ACCOUNT_INACTIVE" }` → toast + redirect a `/cuenta-inactiva` con 1.5s de delay |
+| `pages/AccountInactive.jsx` | Nueva página con opciones de contacto (email + WhatsApp) y botón volver al inicio |
+| `App.jsx` | Nueva ruta pública `/cuenta-inactiva` → `<AccountInactive />` |
+
+#### FASE C — Checkout + Cupones (bugs críticos)
+| Archivo | Bug → Solución |
+|---|---|
+| `services/index.js` | `paymentService.createPaymentIntent` no enviaba `couponCode` → añadido como 3er parámetro |
+| `services/index.js` | No existía `paymentService.createTransferOrder` → nuevo método `POST /payment/create-transfer-order` |
+| `services/index.js` | `couponService.validate` enviaba solo `{ code }` → ahora envía `{ code, subtotal }` |
+| `pages/checkout/Checkout.jsx` | `handleConfirm` usaba `orderService.createOrder` (endpoint inexistente) → usa `paymentService.createTransferOrder` |
+| `pages/checkout/Checkout.jsx` | `handleInitStripe` no pasaba cupón → ahora pasa `couponCode` cuando hay cupón activo |
+| `pages/checkout/Checkout.jsx` | `couponData.discountPercent` no existe en respuesta del backend → usa `discountAmount` directamente |
+
+#### FASE D — Perfil extendido
+| Archivo | Cambio |
+|---|---|
+| `hooks/useProfile.js` | Nuevo hook React Query: `GET/PUT /users/profile`, `PUT /users/notification-preferences`, `PATCH /users/deactivate` |
+| `services/index.js` | Nuevo `userService` con los 4 endpoints del perfil extendido |
+| `pages/profile/Profile.jsx` | Nuevas secciones en tab "Info Personal": datos demográficos (documentType, documentNumber, gender, dateOfBirth) y preferencias de notificaciones (toggles emailNotifications/marketingEmails). "Eliminar cuenta" reemplazado por "Desactivar cuenta" real via PATCH /users/deactivate |
+
+#### FASE E — Categorías
+| Archivo | Cambio |
+|---|---|
+| `utils/constants.js` | Añadida `PRODUCT_CATEGORIES` con las 5 categorías reales de mobile/MongoDB: Palitos Premium, Cocteleros, Dulces, Especiales, Nuevos |
+
+#### FASE F — Admin redirect
+| Archivo | Cambio |
+|---|---|
+| `contexts/AuthContext.jsx` | Detecta admin via `sessionClaims.role`, `publicMetadata.role` o `VITE_ADMIN_EMAIL`. Expone `isAdmin` y `user.role` |
+
+---
+
 ## [24-02-2026] — Sesión 6
 
 ### 🐛 Bugs corregidos + ✨ Mejoras UX en Pedidos

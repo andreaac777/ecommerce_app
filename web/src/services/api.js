@@ -48,7 +48,14 @@ api.interceptors.response.use(
           break;
 
         case 403:
-          toast.error('No tienes permisos para realizar esta acción.');
+          if (data?.code === 'ACCOUNT_INACTIVE') {
+            toast.error('Tu cuenta ha sido desactivada. Serás redirigido.');
+            setTimeout(() => {
+              window.location.href = '/cuenta-inactiva';
+            }, 1500);
+          } else {
+            toast.error('No tienes permisos para realizar esta acción.');
+          }
           break;
 
         case 404:

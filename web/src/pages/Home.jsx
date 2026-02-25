@@ -28,8 +28,8 @@ const Home = () => {
               <span className="text-ui-background">Colombia</span>
             </h1>
             <p className="mt-4 text-lg opacity-90 lg:text-xl">
-              Empanadas crujientes, buñuelos esponjosos y café colombiano de
-              origen. Tradición artesanal desde 2020.
+              Palitos de Queso crujientes, Buñuelos esponjosos y tradición colombiana en
+              cada bocado. Calidad desde 2005.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link to="/catalogo">

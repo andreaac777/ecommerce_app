@@ -18,6 +18,9 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 // Cookie banner
 import CookieBanner from './components/common/CookieBanner';
 
+// Scroll to top en cambio de ruta
+import ScrollToTop from './components/common/ScrollToTop';
+
 // Public pages
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
@@ -31,6 +34,9 @@ import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import PostLogin from './pages/auth/PostLogin';
+
+// Account inactive
+import AccountInactive from './pages/AccountInactive';
 
 // Info pages
 import Contact from './pages/info/Contact';
@@ -71,6 +77,7 @@ function AppRoutes() {
     <AuthProvider>
       <CartProvider>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Layout />}>
               {/* Públicas */}
@@ -85,6 +92,9 @@ function AppRoutes() {
               <Route path="registro" element={<Register />} />
               <Route path="recuperar-password" element={<ForgotPassword />} />
               <Route path="restablecer-password/:token" element={<ResetPassword />} />
+
+              {/* Cuenta inactiva */}
+              <Route path="cuenta-inactiva" element={<AccountInactive />} />
 
               {/* Info */}
               <Route path="contacto" element={<Contact />} />
