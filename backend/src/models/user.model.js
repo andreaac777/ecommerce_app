@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema(
         },
         documentType: {
             type: String,
-            enum: ["cedula_ciudadania", "cedula_extranjeria", "pasaporte"],
+            enum: ["cedula_ciudadania", "cedula_extranjeria"],
             default: null,
         },
         documentNumber: {

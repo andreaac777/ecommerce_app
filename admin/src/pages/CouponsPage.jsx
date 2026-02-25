@@ -79,7 +79,7 @@ export default function CouponsPage() {
             code: form.code.toUpperCase().trim(),
             discountType: form.discountType,
             discountValue: Number(form.discountValue),
-            expiresAt: form.expiresAt || null,
+            expiresAt: form.expiresAt ? new Date(form.expiresAt + "T23:59:59") : null,
         };
         if (editingId) {
             updateMutation.mutate({ id: editingId, ...payload });

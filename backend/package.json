@@ -18,12 +18,14 @@
     "@clerk/localizations": "^3.35.0",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "inngest": "^3.49.3",
     "mongoose": "^8.19.3",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
+    "pdfkit": "^0.17.2",
     "stripe": "^19.3.1"
   },
   "devDependencies": {
