@@ -2,7 +2,15 @@ import cloudinary from "../config/cloudinary.js";
 import { Product } from "../models/product.model.js";
 import { Order } from "../models/order.model.js";
 import { User } from "../models/user.model.js";
-import { sendOrderUpdatedAdminEmail, sendOrderUpdatedClientEmail,} from "../services/email.service.js";
+import { sendOrderUpdatedAdminEmail, sendOrderUpdatedClientEmail, sendInvoiceEmails } from "../services/email.service.js";
+import { generateInvoicePDF, generateInvoiceCSV } from "../services/invoice.service.js";
+
+const inferPaymentMethod = (paymentResultId = "") => {
+    if (paymentResultId.startsWith("pi_"))       return "stripe";
+    if (paymentResultId.startsWith("transfer_")) return "transferencia";
+    if (paymentResultId) console.warn(`inferPaymentMethod: unrecognized paymentResultId prefix: ${paymentResultId}`);
+    return "transferencia";
+};
 
 export async function createProduct (req, res) {
     try {
@@ -71,7 +79,6 @@ export async function updateProduct (req, res) {
         if (stock !== undefined) product.stock = parseInt(stock);
         if (category) product.category = category;
         
-        // handle image updates if new images are uploaded
         if (req.files && req.files.length > 0) {
             if (req.files.length > 3) {
                 return res.status(400).json({ message: "Maximum three images allowed" });
@@ -140,6 +147,13 @@ export async function updateOrderStatus (req, res) {
                 const user = order.user;
 
                 if (user) {
+                    
+                    const orderItems = order.orderItems.map((item) => ({
+                        name:     item.name || item.product?.name || "Producto",
+                        quantity: item.quantity,
+                        price:    item.price,
+                    }));
+
                     const emailData = {
                         orderId: order._id.toString(),
                         status,
@@ -147,28 +161,76 @@ export async function updateOrderStatus (req, res) {
                         userName: user.name,
                         total: order.totalPrice,
                         discount: order.discount || 0, 
-                        items: order.orderItems.map(item => ({
-                            name: item.name || item.product?.name || 'Producto',
-                            quantity: item.quantity,
-                            price: item.price,
-                        })),
+                        items: orderItems,
                         shippingAddress: order.shippingAddress,
                         emailNotifications: user.emailNotifications,    
                     };
 
-                    Promise.allSettled([
-                        sendOrderUpdatedAdminEmail(emailData),
-                        sendOrderUpdatedClientEmail(emailData),
-                    ]).then(results => {
-                        results.forEach((result, index) => {
-                            if (result.status === 'fulfilled') {
-                                const emailType = index === 0 ? 'Admin' : 'Cliente';
-                                console.log(`Email enviado a ${emailType}`);
-                            } else if (result.status === 'rejected') {
-                                console.error('Error enviando email:', result.reason);
-                            }
+                    if (status !== "paid") {
+                        Promise.allSettled([
+                            sendOrderUpdatedAdminEmail(emailData),
+                            sendOrderUpdatedClientEmail(emailData),
+                        ]).then((results) => {
+                            results.forEach((result, index) => {
+                                if (result.status === "fulfilled") {
+                                    console.log(`Email de estado enviado a ${index === 0 ? "Admin" : "Cliente"}`);
+                                } else {
+                                    console.error("Error enviando email de estado:", result.reason);
+                                }
+                            });
                         });
-                    }).catch(err => console.error('Unexpected email handling error:', err));
+                    }
+
+                    if (status === "paid") {
+                        (async () => {
+                            try {
+                                const invoiceData = {
+                                    orderId:  order._id.toString(),
+                                    date:     order.paidAt || new Date(),
+                                    paymentMethod: inferPaymentMethod(order.paymentResult?.id),
+                                    items:    orderItems,
+                                    shipping: 10000,
+                                    discount: order.discount || 0,
+                                    customer: {
+                                        name:           user.name,
+                                        documentType:   user.documentType  || null,
+                                        documentNumber: user.documentNumber || "—",
+                                        email:          user.email,
+                                        phone:          user.addresses?.[0]?.phoneNumber || "—",
+                                        address:        order.shippingAddress?.streetAddress || "—",
+                                        city:           order.shippingAddress?.city          || "—",
+                                    },
+                                };
+
+                                const year = invoiceData.date.getFullYear();
+                                const suffix = invoiceData.orderId.slice(-8).toUpperCase();
+                                const invoiceNumber = `FV-${year}-${suffix}`;
+
+                                const pdfBuffer  = await generateInvoicePDF(invoiceData);
+                                const csvContent = generateInvoiceCSV(invoiceData);
+
+                                const results = await sendInvoiceEmails({
+                                    userName:           user.name,
+                                    userEmail:          user.email,
+                                    orderId:            order._id.toString(),
+                                    invoiceNumber,
+                                    pdfBuffer,
+                                    csvContent,
+                                    emailNotifications: user.emailNotifications,
+                                });
+
+                                results.forEach((result, index) => {
+                                    if (result.status === "fulfilled") {
+                                        console.log(`Factura enviada a ${index === 0 ? "Cliente" : "Admin"} (${invoiceNumber})`);
+                                    } else {
+                                        console.error(`Error enviando factura a ${index === 0 ? "Cliente" : "Admin"}:`, result.reason);
+                                    }
+                                });
+                            } catch (invoiceError) {
+                                console.error("Error generando/enviando factura:", invoiceError.message, invoiceError.stack);
+                            }
+                        })();
+                    }
                 }
             } catch (emailError) {
                 console.error('Error en proceso de emails:', emailError.message);
@@ -234,10 +296,8 @@ export const deleteProduct = async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Delete images from Cloudinary
         if (product.images && product.images.length > 0) {
             const deletePromises = product.images.map((imageUrl) => {
-                // Extract public_id from URL (assumes format: .../products/publicId.ext)
                 const publicId = "products/" + imageUrl.split("/products/")[1]?.split(".")[0];
                 if (publicId) return cloudinary.uploader.destroy(publicId);
             });
