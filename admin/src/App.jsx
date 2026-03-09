@@ -13,18 +13,26 @@ import DashboardLayout from './layouts/DashboardLayout';
 import PageLoader from './components/PageLoader';
 
 function App() {
-    const { isSignedIn, isLoaded } = useAuth();
+    const { isSignedIn, isLoaded, sessionClaims } = useAuth();
     const { user, isLoaded: userLoaded } = useUser();
 
     if (!isLoaded || !userLoaded) {
         return <PageLoader />;
     }
-    const isAdmin = user?.publicMetadata?.role === 'admin';
+
+    if (isSignedIn && user && Object.keys(user.publicMetadata ?? {}).length === 0 && !sessionClaims?.role) {
+        return <PageLoader />;
+    }
+
+    const isAdmin =
+        user?.publicMetadata?.role === 'admin' ||
+        sessionClaims?.role === 'admin';
 
     if (import.meta.env.DEV) {
         console.log('Auth check:', {
             email: user?.primaryEmailAddress?.emailAddress,
-            role: user?.publicMetadata?.role,
+            roleFromMetadata: user?.publicMetadata?.role,
+            roleFromClaims: sessionClaims?.role,
             isAdmin,
             isSignedIn
         });

@@ -1,21 +1,15 @@
-import { SignIn } from '@clerk/clerk-react'
+import { SignIn } from '@clerk/clerk-react';
 
 function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden bg-white">
-      
       <img
         src="https://res.cloudinary.com/diqoi03kk/image/upload/v1771179829/Comida-de-navidad-en-Colombia_rpr88g.jpg"
         alt=""
         aria-hidden
         className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          filter: 'blur(2px)',
-          transform: 'scale(1.03)',
-          opacity: 0.75,
-        }}
+        style={{ filter: 'blur(2px)', transform: 'scale(1.03)', opacity: 0.75 }}
       />
-
       <div
         className="absolute inset-0"
         style={{
@@ -24,7 +18,6 @@ function LoginPage() {
           WebkitBackdropFilter: 'blur(3px)',
         }}
       />
-
       <div className="relative z-10 w-full flex justify-center">
         <SignIn
           routing="hash"
@@ -33,22 +26,16 @@ function LoginPage() {
             layout: {
               logoImageUrl: "https://res.cloudinary.com/diqoi03kk/image/upload/v1771860261/logo-color_jbly4j.png",
               logoLinkUrl: '/dashboard',
+              showOptionalFields: false,
             },
             variables: {
+              colorPrimary: '#B06A4A',
               colorInputBackground: '#F9FAFB',
             },
             elements: {
               headerTitle: { display: 'none' },
-              logoBox: {
-                height: '120px',
-                justifyContent: 'center',
-                marginBottom: '4px',
-              },
-              logoImage: {
-                height: '120px',
-                width: 'auto',
-                maxWidth: 'none',
-              },
+              logoBox: { height: '120px', justifyContent: 'center', marginBottom: '4px' },
+              logoImage: { height: '120px', width: 'auto', maxWidth: 'none' },
               card: {
                 backgroundColor: '#ffffff',
                 border: 'none',
@@ -56,16 +43,16 @@ function LoginPage() {
               },
               socialButtonsBlockButton: {
                 backgroundColor: '#F3F4F6',
-                color: '#5B3A29',
                 border: '1px solid #E5E7EB',
               },
               formFieldOptionalLabel: { display: 'none' },
+              footer: { display: 'none' },
             },
           }}
         />
       </div>
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;
