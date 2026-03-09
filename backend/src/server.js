@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import os from "os";
 import { clerkMiddleware } from '@clerk/express';
 import { serve } from "inngest/express";
 import cors from "cors";
@@ -117,14 +118,31 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
+// Detecta automáticamente todas las IPs de red disponibles
+const getNetworkIPs = () => {
+  const interfaces = os.networkInterfaces();
+  const ips = [];
+  for (const iface of Object.values(interfaces)) {
+    for (const config of iface) {
+      if (config.family === "IPv4" && !config.internal) {
+        ips.push(config.address);
+      }
+    }
+  }
+  return ips;
+};
+
 const startServer = async () => {
     await connectDB();
     const HOST = '0.0.0.0';
     const PORT = ENV.PORT || 3000;
     app.listen(PORT, HOST, () => {
+      const networkIPs = getNetworkIPs();
       console.log('🚀 Server is up and running!');
       console.log(`💻 Local:        http://localhost:${PORT}`);
-      console.log(`📱 Network:      http://192.168.40.137:${PORT}`);
+      networkIPs.forEach(ip => {
+        console.log(`📱 Network:      http://${ip}:${PORT}`);
+      });
       console.log(`🌍 Environment:  ${ENV.NODE_ENV || 'development'}`);
     });
 };
