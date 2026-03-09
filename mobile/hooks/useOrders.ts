@@ -11,5 +11,9 @@ export const useOrders = () => {
             const { data } = await api.get<{ orders: Order[] }>("/orders");
             return data.orders || [];
         },
+        staleTime: 0,                    
+        refetchInterval: 15 * 1000,      
+        refetchOnWindowFocus: true,      
+        refetchIntervalInBackground: false,
     });
 };

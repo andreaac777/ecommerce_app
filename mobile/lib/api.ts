@@ -22,9 +22,13 @@ const getApiUrl = () => {
     return "http://10.0.2.2:3000/api";
   }
 
-  const MANUAL_IP = "192.168.40.137";
-  console.log("💻 Usando IP manual:", MANUAL_IP);
-  return `http://${MANUAL_IP}:3000/api`;
+  const MANUAL_IPS = [
+    "192.168.0.106",  
+    "192.168.40.137",  
+  ];
+   const ACTIVE_IP = MANUAL_IPS[1];
+  console.log("💻 Usando IP manual:", ACTIVE_IP);
+  return `http://${ACTIVE_IP}:3000/api`;
 };
 
 const API_URL = getApiUrl();
