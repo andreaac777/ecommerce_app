@@ -20,7 +20,9 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.mobile"
+      "android": {
+        "package": "com.andreaac.mobile"
+      }
     },
     "web": {
       "output": "static",
