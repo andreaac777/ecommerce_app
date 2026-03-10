@@ -22,7 +22,8 @@
       "predictiveBackGestureEnabled": false,
       "android": {
         "package": "com.andreaac.mobile"
-      }
+      },
+      "package": "com.andreaac.mobile"
     },
     "web": {
       "output": "static",
